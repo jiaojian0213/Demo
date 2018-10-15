@@ -16,6 +16,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Toast;
 
+import com.esri.core.geometry.GeometryEngine;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.SpatialReference;
+import com.esri.core.map.Graphic;
+import com.example.jiao.demo.Constants;
 import com.example.jiao.demo.service.LocationService;
 import com.orhanobut.logger.Logger;
 import com.zhy.autolayout.AutoFrameLayout;
@@ -146,12 +151,12 @@ public class BaseActivity extends SwipeBackActivity implements ServiceConnection
 
     @Override
     public void locationChange(Location location) {
-//        GlobalVariableV.latitude = location.getLatitude();
-//        GlobalVariableV.longitude = location.getLongitude();
-//        Point wgspoint = new Point(location.getLongitude(), location.getLatitude());
-//        GlobalVariableV.mapPoint = (Point) GeometryEngine.project(wgspoint, SpatialReference.create(4326), SpatialReference.create(3857));
-//        if(picSymbol != null)
-//            GlobalVariableV.graphic = new Graphic(GlobalVariableV.mapPoint,picSymbol);
+        Constants.latitude = location.getLatitude();
+        Constants.longitude = location.getLongitude();
+        Point wgspoint = new Point(location.getLongitude(), location.getLatitude());
+        Constants.mapPoint = (Point) GeometryEngine.project(wgspoint, SpatialReference.create(4326), SpatialReference.create(3857));
+        if(Constants.picSymbol != null)
+            Constants.graphic = new Graphic(Constants.mapPoint,Constants.picSymbol);
         this.location = location;
         Logger.i("base location = "+ location.getLatitude() +"--"+ location.getLongitude());
     }

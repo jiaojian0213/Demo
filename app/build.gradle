@@ -17,7 +17,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+
+//    greendao {
+//        targetGenDir 'src/main/java'
+//        daoPackage 'com.peacemap.yinongpicc.dao'
+//        schemaVersion  55 //添加phone
+//    }
 }
+
+
 
 repositories{
     flatDir{ dirs 'libs' }
