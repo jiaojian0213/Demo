@@ -107,7 +107,6 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         mapview.addLayer(locationLayer);
         mapview.addLayer(tempLayer);
         sketchGraphicsOverlay = new SketchGraphicsOverlay(mapview, this);
-        sketchGraphicsOverlay.setDrawingMode(SketchGraphicsOverlay.DrawingMode.POLYGON);
 
         rbVecMap.setChecked(true);
         rbImgMap.setChecked(false);
@@ -131,6 +130,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     }
 
     public void locationing() {
+        if(location == null)
+            return;
         mapview.centerAt(location.getLatitude(), location.getLongitude(), true);//116.33662  40.08895
         mapview.setScale(5000);
 
