@@ -14,7 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.esri.android.map.MapView;
+import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.example.jiao.demo.Constants;
@@ -127,6 +129,31 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         });
 
         startLocation();
+
+        btLayer1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapview.setOnSingleTapListener(new OnSingleTapListener() {
+                    @Override
+                    public void onSingleTap(float v, float v1) {
+                        onAddMarkerClick(v,v1);
+                    }
+                });
+            }
+        });
+    }
+
+    public void onAddMarkerClick(float x, float y){
+        int[] graphicIds = tempLayer.getGraphicIDs();
+        if(graphicIds != null && graphicIds.length > 0){
+            Point point = mapview.toMapPoint(x, y);
+            Graphic graphic = new Graphic(point, picSymbol);
+            tempLayer.updateGraphic(graphicIds[0], graphic);
+        }else {
+            Point point = mapview.toMapPoint(x, y);
+            Graphic graphic = new Graphic(point, picSymbol);
+            tempLayer.addGraphic(graphic);
+        }
     }
 
     public void locationing() {
