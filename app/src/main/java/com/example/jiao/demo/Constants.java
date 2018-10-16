@@ -14,4 +14,5 @@ public class Constants {
     public static Point mapPoint;
     public static Graphic graphic;
     public static PictureMarkerSymbol picSymbol;
+    public static String area_precision = "1";
 }

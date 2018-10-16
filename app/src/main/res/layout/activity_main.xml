@@ -6,23 +6,104 @@
     android:layout_height="match_parent"
     tools:context="com.example.jiao.demo.ui.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <!--<include layout="@layout/toolbar"/>-->
     <com.esri.android.map.MapView
         android:id="@+id/mapview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="0dp"
+        android:layout_height="443dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <include layout="@layout/map_controller_layout"/>
 
     </com.esri.android.map.MapView>
 
+
+    <RelativeLayout
+        android:background="@color/background_material_dark"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <ImageButton
+            android:contentDescription="@string/pointButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/pointButton"
+            android:visibility="gone"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_point"
+            android:onClick="pointClick"/>
+        <ImageButton
+            android:contentDescription="@string/polylineButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/polylineButton"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/pointButton"
+            android:layout_toRightOf="@+id/pointButton"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_polyline"
+            android:onClick="polylineClick"/>
+        <ImageButton
+            android:contentDescription="@string/polygonButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/polygonButton"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/polylineButton"
+            android:layout_toRightOf="@+id/polylineButton"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_polygon"
+            android:onClick="polygonClick"/>
+        <ImageButton
+            android:contentDescription="@string/undoButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/undoButton"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/redoButton"
+            android:layout_toLeftOf="@+id/redoButton"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_undo"
+            android:onClick="undoClick"/>
+        <ImageButton
+            android:contentDescription="@string/redoButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/redoButton"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/clearButton"
+            android:layout_toLeftOf="@+id/clearButton"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_redo"
+            android:onClick="redoClick"/>
+        <ImageButton
+            android:contentDescription="@string/clearButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/clearButton"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/finishButton"
+            android:layout_toLeftOf="@+id/finishButton"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_clear"
+            android:onClick="clearClick"/>
+
+        <ImageButton
+            android:contentDescription="@string/clearButtonDescription"
+            android:background="@drawable/button_bar_background"
+            android:id="@+id/finishButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_action_clear"
+            android:onClick="finishClick"/>
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
