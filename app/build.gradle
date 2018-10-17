@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'org.greenrobot.greendao'
 android {
     compileSdkVersion 26
     buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.example.jiao.demo"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,11 +30,11 @@ android {
         exclude 'META-INF/NOTICE'
     }
 
-//    greendao {
-//        targetGenDir 'src/main/java'
-//        daoPackage 'com.peacemap.yinongpicc.dao'
-//        schemaVersion  55 //添加phone
-//    }
+    greendao {
+        targetGenDir 'src/main/java'
+        daoPackage 'com.example.jiao.demo.dao'
+        schemaVersion  1 //
+    }
 }
 
 
@@ -89,7 +89,7 @@ dependencies {
         // if you don't use android.app.Fragment you can exclude support for them
         exclude module: "support-v13"
     }
-//    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.4.0"
+    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.4.0"
 //    compile 'javax.annotation:javax.annotation-api:1.2'
 //    compile 'com.github.orangegangsters:swipy:1.2.3@aar'
 //    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'

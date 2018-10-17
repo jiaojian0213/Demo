@@ -1,5 +1,7 @@
 package com.example.jiao.demo;
 
+import android.content.Context;
+
 import com.esri.core.geometry.Point;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
@@ -9,6 +11,7 @@ import com.esri.core.symbol.PictureMarkerSymbol;
  */
 
 public class Constants {
+    public static Context context;
     public static double latitude;
     public static double longitude;
     public static Point mapPoint;

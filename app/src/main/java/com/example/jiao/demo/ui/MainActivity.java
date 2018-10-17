@@ -1,6 +1,7 @@
 package com.example.jiao.demo.ui;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -16,18 +17,24 @@ import android.widget.TextView;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.example.jiao.demo.Constants;
 import com.example.jiao.demo.R;
+import com.example.jiao.demo.daomodel.CitySiteModel;
 import com.example.jiao.demo.layer.PeaceGraphicsLayer;
 import com.example.jiao.demo.layer.SketchGraphicsOverlay;
 import com.example.jiao.demo.layer.SketchGraphicsOverlayEventListener;
 import com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer;
+import com.example.jiao.demo.manager.DBManager;
+import com.orhanobut.logger.Logger;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.functions.Action1;
 
 import static com.example.jiao.demo.Constants.graphic;
 import static com.example.jiao.demo.Constants.picSymbol;
@@ -35,7 +42,7 @@ import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuT
 import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuTiledMapServiceType.IMG_W;
 import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuTiledMapServiceType.VEC_W;
 
-public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, SketchGraphicsOverlayEventListener {
+public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, SketchGraphicsOverlayEventListener, View.OnClickListener {
 
     @Bind(R.id.distance)
     TextView distance;
@@ -83,6 +90,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private PeaceGraphicsLayer tempLayer;
     private PeaceGraphicsLayer locationLayer;
     private SketchGraphicsOverlay sketchGraphicsOverlay;
+    private Point markerPoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,38 +128,22 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         cbCitySite.setOnCheckedChangeListener(this);
         cbTrajectory.setOnCheckedChangeListener(this);
 
-        btLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                mapview.centerAt(40.08895,116.33662,  true);//116.33662  40.08895
-                locationing();
-            }
-        });
+        btLocation.setOnClickListener(this);
+        btLayer1.setOnClickListener(this);
 
         startLocation();
 
-        btLayer1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mapview.setOnSingleTapListener(new OnSingleTapListener() {
-                    @Override
-                    public void onSingleTap(float v, float v1) {
-                        onAddMarkerClick(v,v1);
-                    }
-                });
-            }
-        });
     }
 
     public void onAddMarkerClick(float x, float y){
         int[] graphicIds = tempLayer.getGraphicIDs();
         if(graphicIds != null && graphicIds.length > 0){
-            Point point = mapview.toMapPoint(x, y);
-            Graphic graphic = new Graphic(point, picSymbol);
+            markerPoint = mapview.toMapPoint(x, y);
+            Graphic graphic = new Graphic(markerPoint, picSymbol);
             tempLayer.updateGraphic(graphicIds[0], graphic);
         }else {
-            Point point = mapview.toMapPoint(x, y);
-            Graphic graphic = new Graphic(point, picSymbol);
+            markerPoint = mapview.toMapPoint(x, y);
+            Graphic graphic = new Graphic(markerPoint, picSymbol);
             tempLayer.addGraphic(graphic);
         }
     }
@@ -289,11 +281,53 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
 
     public void finishClick(View v){
+        if(btLayer1.isSelected()){
+            Point point = (Point) GeometryEngine.project(markerPoint, SpatialReference.create(3857), SpatialReference.create(4326));
+            Logger.i("完成" + point);
+            CitySiteModel citySiteModel = new CitySiteModel();
+            citySiteModel.setLongitude(""+point.getX());
+            citySiteModel.setLatitude(""+point.getY());
+            DBManager.getInstance(getApplicationContext()).getWritDao()
+                    .getCitySiteModelDao()
+                    .rxPlain()
+                    .insert(citySiteModel)
+                    .subscribe(new Action1<CitySiteModel>() {
+                        @Override
+                        public void call(CitySiteModel citySiteModel) {
+                            Logger.i("完成" + citySiteModel.getId());
+                            //TODO 将marker转移到城址图层
+                            Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
+                            intent.putExtra("CITY_SITE_ID",citySiteModel.getId());
+                            startActivity(intent);
+                        }
+                    });
+            return;
+        }
         showDialog("您计算的结果为xxxx", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.bt_location:
+                // mapview.centerAt(40.08895,116.33662,  true);//116.33662  40.08895
+                locationing();
+                break;
+            case R.id.bt_layer1:
+                btLayer1.setSelected(!btLayer1.isSelected());
+                mapview.setOnSingleTapListener(new OnSingleTapListener() {
+                    @Override
+                    public void onSingleTap(float v, float v1) {
+                        onAddMarkerClick(v,v1);
+                    }
+                });
+                break;
+
+        }
     }
 }
