@@ -95,6 +95,15 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private SketchGraphicsOverlay sketchGraphicsOverlay;
     private Point markerPoint;
 
+    private OnSingleTapListener onSingleTapListener = new OnSingleTapListener() {
+        @Override
+        public void onSingleTap(float v, float v1) {
+            if(btLayer1.isSelected())
+                onAddMarkerClick(v,v1);
+            onMarkerClick(v,v1);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,6 +128,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         mapview.addLayer(trajectoryLayer);
         mapview.addLayer(locationLayer);
         mapview.addLayer(tempLayer);
+        //TODO 编辑图形完成后需要重新设置监听
+        mapview.setOnSingleTapListener(onSingleTapListener);
         sketchGraphicsOverlay = new SketchGraphicsOverlay(mapview, this);
 
         rbVecMap.setChecked(true);
@@ -164,6 +175,24 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         map.put(CITY_SITE_ID,citySiteModel.getId());
         Graphic graphic = new Graphic(point, picSymbol,map);
         citySiteLayer.addGraphic(graphic);
+    }
+
+    private void onMarkerClick(float v, float v1) {
+        int[] graphicIDs = citySiteLayer.getGraphicIDs(v, v1, 12);
+        if(graphicIDs == null || graphicIDs.length == 0)
+            return;
+        for(int i = 0;i < graphicIDs.length;i++){
+            Graphic graphic = citySiteLayer.getGraphic(graphicIDs[i]);
+            Object attrValue = graphic.getAttributeValue(CITY_SITE_ID);
+            if(attrValue != null){
+                Long citySiteId = (Long) attrValue;
+                Logger.i("citySiteId = " + citySiteId);
+                Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
+                intent.putExtra(CITY_SITE_ID,citySiteId);
+                startActivity(intent);
+                break;
+            }
+        }
     }
 
     public void onAddMarkerClick(float x, float y){
@@ -325,8 +354,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     .subscribe(new Action1<CitySiteModel>() {
                         @Override
                         public void call(CitySiteModel citySiteModel) {
-                            Logger.i("完成" + citySiteModel.getId());
-                            //TODO 将marker转移到城址图层
+                            Logger.i("citySiteModel id = " + citySiteModel.getId());
                             addCitySiteToLayer(citySiteModel);
                             tempLayer.removeAll();
                             Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
@@ -353,14 +381,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 break;
             case R.id.bt_layer1:
                 btLayer1.setSelected(!btLayer1.isSelected());
-                mapview.setOnSingleTapListener(new OnSingleTapListener() {
-                    @Override
-                    public void onSingleTap(float v, float v1) {
-                        onAddMarkerClick(v,v1);
-                    }
-                });
                 break;
-
         }
     }
 }
