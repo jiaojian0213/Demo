@@ -45,6 +45,7 @@ public class BaseActivity extends SwipeBackActivity implements ServiceConnection
     private static final String LAYOUT_FRAMELAYOUT = "FrameLayout";
     private static final String LAYOUT_RELATIVELAYOUT = "RelativeLayout";
     protected Location location;
+    public static final String CITY_SITE_ID = "CITY_SITE_ID";
 
 
     @Override

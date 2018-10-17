@@ -266,4 +266,15 @@ public class WKTUtils {
     public static String formatArea(String area){
         return String.format("%.1f", Double.valueOf(area));
     }
+
+
+    public static Point change3857To4326(Point inPoint){
+        Point point = (Point) GeometryEngine.project(inPoint, SpatialReference.create(3857), SpatialReference.create(4326));
+        return point;
+    }
+
+    public static Point change4326To3857(Point inPoint){
+        Point point = (Point) GeometryEngine.project(inPoint, SpatialReference.create(4326), SpatialReference.create(3857));
+        return point;
+    }
 }

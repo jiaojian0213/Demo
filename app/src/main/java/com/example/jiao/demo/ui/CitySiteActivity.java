@@ -43,7 +43,7 @@ public class CitySiteActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.citysite_detail_layout);
         Intent intent = getIntent();
-        long city_site_id = intent.getLongExtra("CITY_SITE_ID", 0);
+        long city_site_id = intent.getLongExtra(CITY_SITE_ID, 0);
 
         CitySiteModel citySiteModel = DBManager.getInstance(getApplicationContext())
                 .getWritDao()

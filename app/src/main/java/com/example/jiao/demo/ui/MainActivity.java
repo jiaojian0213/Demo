@@ -17,9 +17,7 @@ import android.widget.TextView;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
-import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
-import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.example.jiao.demo.Constants;
@@ -30,7 +28,12 @@ import com.example.jiao.demo.layer.SketchGraphicsOverlay;
 import com.example.jiao.demo.layer.SketchGraphicsOverlayEventListener;
 import com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer;
 import com.example.jiao.demo.manager.DBManager;
+import com.example.jiao.demo.utils.WKTUtils;
 import com.orhanobut.logger.Logger;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -133,6 +136,34 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
         startLocation();
 
+        initData();
+    }
+
+    public void initData(){
+        DBManager.getInstance(getApplicationContext()).getWritDao()
+                .getCitySiteModelDao()
+                .rxPlain().loadAll()
+                .subscribe(new Action1<List<CitySiteModel>>() {
+                    @Override
+                    public void call(List<CitySiteModel> citySiteModels) {
+                        addCitySitesToLayer(citySiteModels);
+                    }
+                });
+    }
+
+    public void addCitySitesToLayer(List<CitySiteModel> citySiteModels){
+        for(int i = 0;i< citySiteModels.size();i++){
+            addCitySiteToLayer(citySiteModels.get(i));
+        }
+    }
+
+    public void addCitySiteToLayer(CitySiteModel citySiteModel){
+        Point point = new Point(Double.valueOf(citySiteModel.getLongitude()), Double.valueOf(citySiteModel.getLatitude()));
+        point = WKTUtils.change4326To3857(point);
+        Map<String, Object> map = new HashMap<>();
+        map.put(CITY_SITE_ID,citySiteModel.getId());
+        Graphic graphic = new Graphic(point, picSymbol,map);
+        citySiteLayer.addGraphic(graphic);
     }
 
     public void onAddMarkerClick(float x, float y){
@@ -282,7 +313,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
     public void finishClick(View v){
         if(btLayer1.isSelected()){
-            Point point = (Point) GeometryEngine.project(markerPoint, SpatialReference.create(3857), SpatialReference.create(4326));
+            Point point = WKTUtils.change3857To4326(markerPoint);
             Logger.i("完成" + point);
             CitySiteModel citySiteModel = new CitySiteModel();
             citySiteModel.setLongitude(""+point.getX());
@@ -296,8 +327,10 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         public void call(CitySiteModel citySiteModel) {
                             Logger.i("完成" + citySiteModel.getId());
                             //TODO 将marker转移到城址图层
+                            addCitySiteToLayer(citySiteModel);
+                            tempLayer.removeAll();
                             Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
-                            intent.putExtra("CITY_SITE_ID",citySiteModel.getId());
+                            intent.putExtra(CITY_SITE_ID,citySiteModel.getId());
                             startActivity(intent);
                         }
                     });
