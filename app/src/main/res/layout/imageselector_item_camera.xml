@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <com.zhy.autolayout.AutoRelativeLayout
+        android:layout_width="match_parent"
+        android:background="#d7e9e9"
+        android:layout_height="match_parent">
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:layout_width="162px"
+            android:layout_height="162px"
+            android:layout_centerInParent="true"
+            android:background="@drawable/iv_big_camera_selects"
+            app:layout_auto_basewidth="height"
+            />
+    </com.zhy.autolayout.AutoRelativeLayout>
+
+
+</LinearLayout>

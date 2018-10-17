@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //过滤x86的so库
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a','x86'//, 'arm64-v8a'
+        }
     }
     buildTypes {
         release {
@@ -95,7 +100,7 @@ dependencies {
 //    compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
     compile 'com.zhy:percent-support-extends:1.0.1'
 //    compile 'com.yanzhenjie:recyclerview-swipe:1.1.4'
-//    compile 'com.facebook.fresco:fresco:0.12.0'
+    compile 'com.facebook.fresco:fresco:0.12.0'
 
 
 //    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'

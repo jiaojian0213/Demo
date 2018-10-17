@@ -47,7 +47,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="储备林总面积"
+                        android:text="编号"
                         android:textColor="#333333"
                         android:layout_centerVertical="true"
                         android:textSize="40px"
@@ -55,11 +55,11 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_forest_area"
+                        android:id="@+id/et_serialNum"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入储备林总面积"
+                        android:hint="请输入编号"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         android:inputType="numberDecimal"
@@ -87,7 +87,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="目的树种"
+                        android:text="名称"
                         android:textColor="#333333"
                         android:layout_centerVertical="true"
                         android:textSize="40px"
@@ -95,11 +95,11 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_purpose_tree"
+                        android:id="@+id/et_name"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入目的树种"
+                        android:hint="请输入名称"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style" />
 
@@ -123,7 +123,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="目的树种占比（%）"
+                        android:text="时代"
                         android:textColor="#333333"
                         android:layout_centerVertical="true"
                         android:textSize="40px"
@@ -131,13 +131,12 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_purpose_tree_rate"
+                        android:id="@+id/et_times"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入目的树种占比"
+                        android:hint="请输入时代"
                         style="@style/info_edit_style"
-                        android:inputType="number"
                         />
 
                     <View
@@ -160,7 +159,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="树龄（年）"
+                        android:text="地址"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -169,91 +168,13 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_age"
+                        android:id="@+id/et_address"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入树龄"
+                        android:hint="请输入地址"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
-                        />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1px"
-                        android:background="#ececec"
-                        android:layout_alignParentBottom="true"
-                        />
-                </com.zhy.autolayout.AutoRelativeLayout>
-
-                                <com.zhy.autolayout.AutoRelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="122px"
-                    android:paddingLeft="40px"
-                    android:paddingRight="40px"
-                    android:gravity="center_vertical"
-                    android:background="@color/white"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="郁闭度"
-                        android:textColor="#333333"
-                        android:textSize="40px"
-                        android:textColorHint="#bbbbbb"
-                        android:layout_centerVertical="true"
-                        />
-
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_shade_density"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:hint="请输入郁闭度"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
-                        style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
-                        />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1px"
-                        android:background="#ececec"
-                        android:layout_alignParentBottom="true"
-                        />
-                </com.zhy.autolayout.AutoRelativeLayout>
-                <com.zhy.autolayout.AutoRelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="122px"
-                    android:paddingLeft="40px"
-                    android:paddingRight="40px"
-                    android:gravity="center_vertical"
-                    android:background="@color/white"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="密度（株/亩）"
-                        android:textColor="#333333"
-                        android:textSize="40px"
-                        android:textColorHint="#bbbbbb"
-                        android:layout_centerVertical="true"
-                        />
-
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_density"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:hint="请输入密度"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
-                        style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
                         />
 
                     <View
@@ -276,7 +197,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平均树高度"
+                        android:text="发现时间"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -285,14 +206,50 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_avg_height"
+                        android:id="@+id/et_findTime"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入平均树高度"
+                        android:hint="请输入发现时间"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="发现单位"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_findCompany"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入发现单位"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
                         />
 
                     <View
@@ -315,7 +272,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="平均胸径（厘米）"
+                        android:text="类型"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -324,14 +281,13 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_mean_dbh"
+                        android:id="@+id/et_type"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入平均胸径"
+                        android:hint="请输入类型"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
                         />
 
                     <View
@@ -354,7 +310,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="林下植被盖度（%）"
+                        android:text="有无内城"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -363,14 +319,13 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_under_tree_vegetation"
+                        android:id="@+id/et_hasInner"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入林下植被盖度"
+                        android:hint="请输入有无内城"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
-                        android:inputType="number"
                         />
 
                     <View
@@ -393,7 +348,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="蓄积量（立方米）"
+                        android:text="外城面积"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -402,11 +357,11 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_stocking_volume"
+                        android:id="@+id/et_outerArea"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入平均胸径"
+                        android:hint="请输入外城面积"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         android:inputType="numberDecimal"
@@ -432,7 +387,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="年均蓄积生长量"
+                        android:text="内城面积"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -441,11 +396,11 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_avg_volume_growth"
+                        android:id="@+id/et_innerArea"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入年均蓄积生长量"
+                        android:hint="请输入内城面积"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         android:inputType="numberDecimal"
@@ -471,7 +426,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="立地指数(度)"
+                        android:text="有无翁城"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -480,11 +435,125 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_site_index"
+                        android:id="@+id/et_hasWengCity"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入立地指数"
+                        android:hint="请输入有无翁城"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="有无墙体"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_hasWall"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入有无墙体"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="完整度"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_integrity"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入完整度"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="高度"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_height"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入高度"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         android:inputType="numberDecimal"
@@ -510,7 +579,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="地位级"
+                        android:text="墙体构成"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -519,11 +588,87 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_locality_class"
+                        android:id="@+id/et_wallComposition"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入地位级"
+                        android:hint="请输入墙体构成"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否维修过"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_hasRepaired"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入是否维修过"
+                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        style="@style/info_edit_style"
+                        />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#ececec"
+                        android:layout_alignParentBottom="true"
+                        />
+                </com.zhy.autolayout.AutoRelativeLayout>
+
+                <com.zhy.autolayout.AutoRelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="122px"
+                    android:paddingLeft="40px"
+                    android:paddingRight="40px"
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="维修时间"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:layout_centerVertical="true"
+                        />
+
+                    <EditText
+                        android:layout_marginLeft="400px"
+                        android:id="@+id/et_repairTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="请输入维修时间"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style" />
 
@@ -547,7 +692,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="坡度(度)"
+                        android:text="地貌特征"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -556,15 +701,13 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_slope"
+                        android:id="@+id/et_features"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入坡度"
+                        android:hint="请输入地貌特征"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
-                        style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
-                        />
+                        style="@style/info_edit_style" />
 
                     <View
                         android:layout_width="match_parent"
@@ -586,7 +729,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="土壤厚度(厘米)"
+                        android:text="保护单位类型"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -595,15 +738,13 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_soil_thickness"
+                        android:id="@+id/et_protectType"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入土壤厚度"
+                        android:hint="请输入保护单位类型"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
-                        style="@style/info_edit_style"
-                        android:inputType="numberDecimal"
-                        />
+                        style="@style/info_edit_style" />
 
                     <View
                         android:layout_width="match_parent"
@@ -625,7 +766,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="土壤种类"
+                        android:text="详细信息"
                         android:textColor="#333333"
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
@@ -634,11 +775,11 @@
 
                     <EditText
                         android:layout_marginLeft="400px"
-                        android:id="@+id/et_soil_type"
+                        android:id="@+id/et_detail"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入土壤种类"
+                        android:hint="请输入详细信息"
                         android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style" />
 
@@ -651,6 +792,10 @@
                 </com.zhy.autolayout.AutoRelativeLayout>
 
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="800px"></android.support.v7.widget.RecyclerView>
             </com.zhy.autolayout.AutoLinearLayout>
 
 

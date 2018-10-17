@@ -18,4 +18,6 @@ public class Constants {
     public static Graphic graphic;
     public static PictureMarkerSymbol picSymbol;
     public static String area_precision = "1";
+    public static int width;
+    public static int height;
 }

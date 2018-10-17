@@ -6,6 +6,7 @@ import android.os.StrictMode;
 import android.util.DisplayMetrics;
 
 import com.example.jiao.demo.crash.CrashHandler;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.orhanobut.logger.AndroidLogTool;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
@@ -25,7 +26,7 @@ public class MyApplication extends Application {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
-//        Fresco.initialize(this);
+        Fresco.initialize(this);
 //        GlobalVariableV.context = getApplicationContext();
 //        try {
 //            DBManager.getInstance(getApplicationContext());
@@ -41,8 +42,8 @@ public class MyApplication extends Application {
 //        appComponent.inject(this);
 
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-//        GlobalVariableV.width = displayMetrics.widthPixels;
-//        GlobalVariableV.height = displayMetrics.heightPixels;
+        Constants.width = displayMetrics.widthPixels;
+        Constants.height = displayMetrics.heightPixels;
 //        try {
 //            JPushInterface.setDebugMode(false);    // 设置开启日志,发布时请关闭日志
 //            JPushInterface.init(this);            // 初始化 JPush

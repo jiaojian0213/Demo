@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="dimen_value_dp0">0dp</dimen>
+    <dimen name="cpb_stroke_width">4dp</dimen>
+    <dimen name="dimen_value_dp0.5">0.5dp</dimen>
+    <dimen name="dimen_value_dp1">1dp</dimen>
+    <dimen name="dimen_value_dp2">2dp</dimen>
+    <dimen name="dimen_value_dp3">3dp</dimen>
+    <dimen name="dimen_value_dp4">4dp</dimen>
+    <dimen name="dimen_value_dp5">5dp</dimen>
+    <dimen name="dimen_value_dp6">6dp</dimen>
+    <dimen name="dimen_value_dp7">7dp</dimen>
+    <dimen name="dimen_value_dp8">8dp</dimen>
+    <dimen name="dimen_value_dp10">10dp</dimen>
+    <dimen name="dimen_value_dp15">15dp</dimen>
+    <dimen name="dimen_value_dp16">16dp</dimen>
+    <dimen name="dimen_value_dp18">18dp</dimen>
+    <dimen name="dimen_value_dp20">20dp</dimen>
+    <dimen name="dimen_value_dp22">22dp</dimen>
+    <dimen name="dimen_value_dp22.5">22.5dp</dimen>
+    <dimen name="dimen_value_dp24">24dp</dimen>
+    <dimen name="dimen_value_dp25">25dp</dimen>
+    <dimen name="dimen_value_dp26">26dp</dimen>
+    <dimen name="dimen_value_dp28">28dp</dimen>
+    <dimen name="dimen_value_dp30">30dp</dimen>
+    <dimen name="dimen_value_dp34">34dp</dimen>
+    <dimen name="dimen_value_dp35">35dp</dimen>
+    <dimen name="dimen_value_dp40">40dp</dimen>
+    <dimen name="dimen_value_dp45">45dp</dimen>
+    <dimen name="dimen_value_dp50">50dp</dimen>
+    <dimen name="dimen_value_dp55">55dp</dimen>
+    <dimen name="dimen_value_dp60">60dp</dimen>
+    <dimen name="dimen_value_dp64">64dp</dimen>
+    <dimen name="dimen_value_dp65">65dp</dimen>
+    <dimen name="dimen_value_dp70">70dp</dimen>
+    <dimen name="dimen_value_dp75">75dp</dimen>
+    <dimen name="dimen_value_dp80">80dp</dimen>
+    <dimen name="dimen_value_dp85">85dp</dimen>
+    <dimen name="dimen_value_dp90">90dp</dimen>
+    <dimen name="dimen_value_dp95">95dp</dimen>
+    <dimen name="dimen_value_dp100">100dp</dimen>
+    <dimen name="dimen_value_dp105">105dp</dimen>
+    <dimen name="dimen_value_dp110">110dp</dimen>
+    <dimen name="dimen_value_dp112">112dp</dimen>
+    <dimen name="dimen_value_dp115">115dp</dimen>
+    <dimen name="dimen_value_dp120">120dp</dimen>
+    <dimen name="dimen_value_dp130">130dp</dimen>
+    <dimen name="dimen_value_dp145">145dp</dimen>
+    <dimen name="dimen_value_dp150">150dp</dimen>
+    <dimen name="dimen_value_dp180">180dp</dimen>
+    <dimen name="dimen_value_dp200">200dp</dimen>
+    <dimen name="dimen_value_dp210">210dp</dimen>
+    <dimen name="dimen_value_dp250">250dp</dimen>
+    <dimen name="dimen_value_dp260">260dp</dimen>
+    <dimen name="dimen_value_dp300">300dp</dimen>
+    <!-- ���ֵĴ�С -->
+    <dimen name="dimen_value_sp6">6sp</dimen>
+    <dimen name="dimen_value_sp8">8sp</dimen>
+    <dimen name="dimen_value_sp10">10sp</dimen>
+    <dimen name="dimen_value_sp12">12sp</dimen>
+    <dimen name="dimen_value_sp14">14sp</dimen>
+    <dimen name="dimen_value_sp15">15sp</dimen>
+    <dimen name="dimen_value_sp16">16sp</dimen>
+    <dimen name="dimen_value_sp18">18sp</dimen>
+    <dimen name="dimen_value_sp20">20sp</dimen>
+    <dimen name="dimen_value_sp22">22sp</dimen>
+    <dimen name="dimen_value_sp24">24sp</dimen>
+    <dimen name="dimen_value_sp25">25sp</dimen>
+    <dimen name="dimen_value_sp28">28sp</dimen>
+    <dimen name="dimen_value_sp30">30sp</dimen>
+
+    <dimen name="image_size">120dp</dimen>
+    <dimen name="space_size">2dp</dimen>
+
+    <dimen name="tvsize">15sp</dimen>
+    <dimen name="item_margin">10dp</dimen>
+    <dimen name="layout_margin">40dp</dimen>
+    <dimen name="gv_item_tv_size">12sp</dimen>
+    <dimen name="tip_tv_size">15sp</dimen>
+    <dimen name="title_size">18sp</dimen>
+
+
+    <!-- default item size -->
+    <dimen name="default_img_size">96dp</dimen>
+    <dimen name="default_ui_height">48dp</dimen>
+    <dimen name="default_button_height">40dp</dimen>
+    <dimen name="default_button_margin_vertical">4dp</dimen>
+    <dimen name="default_button_margin_horizontal">4dp</dimen>
+    <dimen name="default_button_text_size">16dp</dimen>
+
+    <dimen name="default_icon_size">32dp</dimen>
+    <dimen name="default_icon_margin">8dp</dimen>
+
+    <dimen name="default_ui_margin_very_small">2dp</dimen>
+    <dimen name="default_ui_margin_small">4dp</dimen>
+    <dimen name="default_ui_margin">8dp</dimen>
+    <dimen name="default_ui_margin_medium">12dp</dimen>
+    <dimen name="default_ui_margin_large">16dp</dimen>
+    <dimen name="default_ui_margin_huge">32dp</dimen>
+
+    <dimen name="text_size_micro">12sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">18sp</dimen>
+    <dimen name="text_size_large">22sp</dimen>
+    <dimen name="text_size_huge">26sp</dimen>
+</resources>
