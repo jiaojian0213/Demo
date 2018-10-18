@@ -1,9 +1,17 @@
 package com.example.jiao.demo.ui;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -13,21 +21,27 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polyline;
+import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.example.jiao.demo.Constants;
 import com.example.jiao.demo.R;
 import com.example.jiao.demo.daomodel.CitySiteModel;
 import com.example.jiao.demo.layer.PeaceGraphicsLayer;
+import com.example.jiao.demo.layer.PointCollection;
 import com.example.jiao.demo.layer.SketchGraphicsOverlay;
 import com.example.jiao.demo.layer.SketchGraphicsOverlayEventListener;
 import com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer;
 import com.example.jiao.demo.manager.DBManager;
+import com.example.jiao.demo.utils.PermissionUtils;
 import com.example.jiao.demo.utils.WKTUtils;
 import com.example.jiao.demo.view.MyToolbar;
 import com.orhanobut.logger.Logger;
@@ -38,6 +52,12 @@ import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
 import rx.functions.Action1;
 
 import static com.example.jiao.demo.Constants.graphic;
@@ -46,7 +66,8 @@ import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuT
 import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuTiledMapServiceType.IMG_W;
 import static com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer.TianDiTuTiledMapServiceType.VEC_W;
 
-public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, SketchGraphicsOverlayEventListener, View.OnClickListener {
+@RuntimePermissions
+public class MainActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, SketchGraphicsOverlayEventListener, View.OnClickListener, SensorEventListener {
 
     @Bind(R.id.distance)
     TextView distance;
@@ -92,6 +113,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     RelativeLayout buttomLayout;
     @Bind(R.id.bt_addMarker)
     ImageView btAddMarker;
+    @Bind(R.id.bt_trackroute)
+    ImageView btTrackroute;
     private TianDiTuTiledMapServiceLayer vecLayer;
     private TianDiTuTiledMapServiceLayer imgLayer;
     private TianDiTuTiledMapServiceLayer cvaLayer;
@@ -111,6 +134,9 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         }
     };
     private PictureMarkerSymbol markerSymbol;
+    private SensorManager manager;
+    private PointCollection trackroutePoints;
+    private PeaceGraphicsLayer tempTrackrouteLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,18 +144,22 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         ArcGISRuntime.setClientId("9yNxBahuPiGPbsdi");//去水印
-
+        manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Drawable locationDrawable = getResources().getDrawable(R.drawable.location2);
         picSymbol = new PictureMarkerSymbol(locationDrawable);
         Drawable markerDrawable = getResources().getDrawable(R.drawable.marker_icon);
         markerSymbol = new PictureMarkerSymbol(markerDrawable);
+
+        toolbar.setTitle("Demo");
+        toolbar.setNavigationIcon(null);
+        setSupportActionBar(toolbar);
 
         btLayer.setSelected(false);
         mapLayer.setVisibility(View.GONE);
         btAddMarker.setSelected(false);
         btMeasure.setSelected(false);
         buttomLayout.setVisibility(View.GONE);
-
+        btTrackroute.setSelected(false);
 
         vecLayer = new TianDiTuTiledMapServiceLayer(VEC_W);
         cvaLayer = new TianDiTuTiledMapServiceLayer(CVA_W);
@@ -138,6 +168,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         trajectoryLayer = new PeaceGraphicsLayer();
         locationLayer = new PeaceGraphicsLayer();
         tempLayer = new PeaceGraphicsLayer();
+        tempTrackrouteLayer = new PeaceGraphicsLayer();
         mapview.addLayer(vecLayer);
         mapview.addLayer(imgLayer);
         mapview.addLayer(cvaLayer);
@@ -145,7 +176,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         mapview.addLayer(trajectoryLayer);
         mapview.addLayer(locationLayer);
         mapview.addLayer(tempLayer);
-        //TODO 编辑图形完成后需要重新设置监听
+        mapview.addLayer(tempTrackrouteLayer);
         mapview.setOnSingleTapListener(onSingleTapListener);
         sketchGraphicsOverlay = new SketchGraphicsOverlay(mapview, this);
 
@@ -163,10 +194,32 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         btAddMarker.setOnClickListener(this);
         btMeasure.setOnClickListener(this);
         btLocation.setOnClickListener(this);
+        btTrackroute.setOnClickListener(this);
 
-        startLocation();
+        MainActivityPermissionsDispatcher.locationStartWithCheck(this);
 
         initData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initGPS();
+//        mMapView.setVisibility(View.VISIBLE);
+
+        // initPermission();//针对6.0以上版本做权限适配
+        Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        //应用在前台时候注册监听器
+        manager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
+    }
+
+    @Override
+    public void onPause() {
+//        mMapView.pause();
+//        mMapView.setVisibility(View.GONE);
+        //应用不在前台时候销毁掉监听器
+        manager.unregisterListener(this);
+        super.onPause();
     }
 
     public void initData() {
@@ -387,12 +440,12 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         }
         SketchGraphicsOverlay.DrawingMode drawingMode = sketchGraphicsOverlay.getDrawingMode();
         String result = "";
-        if(drawingMode == SketchGraphicsOverlay.DrawingMode.POLYGON){
-            result = sketchGraphicsOverlay.getPolygonArea()+"亩";
-        }else if(drawingMode == SketchGraphicsOverlay.DrawingMode.POLYLINE){
-            result = sketchGraphicsOverlay.getPolygonDistance()+"米";
+        if (drawingMode == SketchGraphicsOverlay.DrawingMode.POLYGON) {
+            result = sketchGraphicsOverlay.getPolygonArea() + "平方米";
+        } else if (drawingMode == SketchGraphicsOverlay.DrawingMode.POLYLINE) {
+            result = sketchGraphicsOverlay.getPolygonDistance() + "米";
         }
-        showDialog("您计算的结果为"+result, new DialogInterface.OnClickListener() {
+        showDialog("您计算的结果为" + result, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -416,7 +469,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 }
                 break;
             case R.id.bt_measure:
-                if(btAddMarker.isSelected()) {
+                if (btAddMarker.isSelected()) {
                     btAddMarker.setSelected(false);
                     buttomLayout.setVisibility(View.GONE);
                     tempLayer.removeAll();
@@ -424,41 +477,126 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 btMeasure.setSelected(!btMeasure.isSelected());
                 if (btMeasure.isSelected()) {
                     buttomLayout.setVisibility(View.VISIBLE);
-                    for(int i = 0;i< buttomLayout.getChildCount();i++){
+                    for (int i = 0; i < buttomLayout.getChildCount(); i++) {
                         View childView = buttomLayout.getChildAt(i);
-                        if(childView.getId() == R.id.pointButton)
+                        if (childView.getId() == R.id.pointButton)
                             continue;
                         childView.setVisibility(View.VISIBLE);
                     }
                 } else {
                     buttomLayout.setVisibility(View.GONE);
                     sketchGraphicsOverlay.clear();
+                    mapview.setOnTouchListener(new MapOnTouchListener(getApplicationContext(),mapview));
                 }
                 break;
             case R.id.bt_addMarker:
-                if(btMeasure.isSelected()) {
+                if (btMeasure.isSelected()) {
                     btMeasure.setSelected(false);
                     buttomLayout.setVisibility(View.GONE);
                     sketchGraphicsOverlay.clear();
+                    mapview.setOnTouchListener(new MapOnTouchListener(getApplicationContext(),mapview));
                 }
+                mapview.setOnSingleTapListener(onSingleTapListener);
                 btAddMarker.setSelected(!btAddMarker.isSelected());
                 if (btAddMarker.isSelected()) {
                     buttomLayout.setVisibility(View.VISIBLE);
-                    for(int i = 0;i< buttomLayout.getChildCount();i++){
+                    for (int i = 0; i < buttomLayout.getChildCount(); i++) {
                         View childView = buttomLayout.getChildAt(i);
-                        if(childView.getId() == R.id.finishButton){
+                        if (childView.getId() == R.id.finishButton) {
                             childView.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             childView.setVisibility(View.GONE);
                         }
                     }
                 } else {
                     buttomLayout.setVisibility(View.GONE);
                 }
-                if(!btAddMarker.isSelected()){
+                if (!btAddMarker.isSelected()) {
                     tempLayer.removeAll();
                 }
                 break;
+
+            case R.id.bt_trackroute:
+                btTrackroute.setSelected(!btTrackroute.isSelected());
+                if(btTrackroute.isSelected()) {
+                    if (trackroutePoints == null) {
+                        trackroutePoints = new PointCollection(SpatialReference.create(3857));
+                    } else {
+                        trackroutePoints.clear();
+                    }
+                }else{
+                    trackroutePoints.clear();
+                }
+                break;
         }
+    }
+
+    @Override
+    public void locationChange(Location location) {
+        super.locationChange(location);
+        if(btTrackroute.isSelected()){
+            trackroutePoints.add(Constants.mapPoint);
+        }
+        //TODO 绘制路线到临时图层 tempTrackrouteLayer
+        Polyline lastPolyline = trackroutePoints.getLastPolyline();
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        try {
+            float degree = event.values[0];// 存放了方向值
+            picSymbol.setAngle(degree);
+            Constants.graphic = new Graphic(Constants.mapPoint, picSymbol);
+            int[] ids = locationLayer.getGraphicIDs();
+            if (ids == null) {
+                return;
+            }
+            locationLayer.updateGraphic(ids[0], graphic);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE})
+    public void locationStart() {
+        startLocation();
+    }
+
+    @OnShowRationale({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    void showRationaleForLocation(PermissionRequest request) {
+        PermissionUtils.showRationaleDialog(this, "为保证app功能正常运行，请授权允许相关权限", request);
+    }
+
+    @OnPermissionDenied({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    void onLocationDenied() {
+        Toast.makeText(this, "没有获取到相关权限", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnNeverAskAgain({Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE})
+    void showNeverAskForLocation() {
+        if (PermissionUtils.checkPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {            //点击始终允许时也会调用
+            startLocation();
+        } else {
+            startLocation();
+//            PermissionUtils.showNeverAskDialog(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 }

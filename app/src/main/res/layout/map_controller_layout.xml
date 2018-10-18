@@ -113,6 +113,17 @@
          </LinearLayout>
 
      </RelativeLayout>-->
+
+    <ImageView
+        android:id="@+id/bt_trackroute"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_margin="10dp"
+        android:layout_alignParentRight="true"
+        android:background="#99000000"
+        android:padding="0dp"
+        android:src="@drawable/trackroute_selects" />
+
     <RelativeLayout
         android:id="@+id/controller_layout"
         android:layout_width="wrap_content"

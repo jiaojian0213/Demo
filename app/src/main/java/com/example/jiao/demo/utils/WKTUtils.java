@@ -193,7 +193,7 @@ public class WKTUtils {
     public static double calculateArea2D(Geometry geometry) {
         double geodesicArea = GeometryEngine.geodesicArea(geometry, SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR), null);
         //(1000 * 2f / 3f) = 666.666...
-        double area = Math.abs(geodesicArea) / (1000 * 2f / 3f);// * 0.5761155954260821
+        double area = Math.abs(geodesicArea);// / (1000 * 2f / 3f);// * 0.5761155954260821
         return area;
     }
 
