@@ -18,11 +18,13 @@
         android:visibility="gone" />
 
     <ImageView
-        android:id="@+id/photo_check"
+        android:id="@+id/photo_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|right"
         android:scaleType="fitCenter"
+        android:padding="5dp"
+        android:src="@drawable/delete_icon"
         android:contentDescription="@null" />
 
 </FrameLayout>

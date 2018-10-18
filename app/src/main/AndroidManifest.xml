@@ -63,6 +63,7 @@
         </activity>
 
         <activity android:name=".ui.CitySiteActivity"/>
+        <activity android:name=".ui.PhotoBigActivity"/>
         <service android:name=".service.LocationService"/>
 
         <meta-data

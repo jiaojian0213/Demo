@@ -2,6 +2,7 @@ package com.example.jiao.demo.ui;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jiao.demo.R;
+import com.example.jiao.demo.dao.PhotoModelDao;
 import com.example.jiao.demo.daomodel.CitySiteModel;
 import com.example.jiao.demo.daomodel.PhotoModel;
 import com.example.jiao.demo.manager.DBManager;
@@ -156,6 +158,8 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
         recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
         recyclerView.addItemDecoration(new MarginDecoration(getApplicationContext()));
+//        recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),
+//                DividerItemDecoration.VERTICAL));
 //        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getApplicationContext(), photoModels);
 
         imageAdapter = new PhotoImageAdapter(getApplicationContext(), null);
@@ -168,7 +172,9 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
 
    public void initPhotoModel(){
        DBManager.getInstance(getApplicationContext()).getWritDao()
-               .getPhotoModelDao().rxPlain().loadAll()
+               .getPhotoModelDao().queryBuilder()
+               .where(PhotoModelDao.Properties.TaskId.eq(citySiteModel.getId()))
+               .rxPlain().list()
                .subscribe(new Action1<List<PhotoModel>>() {
                    @Override
                    public void call(List<PhotoModel> photoModels) {
@@ -370,11 +376,21 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
 
     @Override
     public void onImageClick(View view, int position, PhotoModel photoModel) {
-        Logger.i("点击");
+//        Logger.i("点击");
+        Intent intent = new Intent(getApplicationContext(), PhotoBigActivity.class);
+        intent.putExtra("itemImage",""+photoModel.getPath());
+        startActivity(intent);
     }
 
     @Override
-    public void onDeleteClick(View view, int position, PhotoModel photoModel) {
-
+    public void onDeleteClick(View view, int position, final PhotoModel photoModel) {
+        showDialog("您是否确定删除图片？", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                imageAdapter.deleteItem(photoModel);
+                DBManager.getInstance(getApplicationContext()).getWritDao()
+                        .getPhotoModelDao().delete(photoModel);
+            }
+        });
     }
 }

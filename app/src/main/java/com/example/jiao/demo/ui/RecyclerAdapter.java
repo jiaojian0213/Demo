@@ -107,7 +107,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ImageV
             itemimageview = itemView;
             photo_image = (SimpleDraweeView) itemView.findViewById(R.id.photo_image);
             photo_mask = itemView.findViewById(R.id.photo_mask);
-            photo_check = (ImageView) itemView.findViewById(R.id.photo_check);
+            photo_check = (ImageView) itemView.findViewById(R.id.photo_delete);
             itemView.setTag(R.layout.imageselector_item_image,this);
         }
     }

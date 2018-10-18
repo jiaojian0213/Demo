@@ -15,6 +15,9 @@ import com.example.jiao.demo.daomodel.PhotoModel;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,10 +122,17 @@ public class PhotoImageAdapter extends RecyclerView.Adapter<PhotoImageAdapter.Vi
         this.listener = listener;
     }
 
+    public void deleteItem(PhotoModel photoModel) {
+        if(imageList!= null && imageList.contains(photoModel)){
+            imageList.remove(photoModel);
+            notifyDataSetChanged();
+        }
+    }
+
     class ViewHolder extends RecyclerAdapter.ImageViewHolder{
         SimpleDraweeView photo_image;
         View photo_mask;
-        ImageView photo_check;
+        ImageView photo_delete;
         View itemView;
 
         public ViewHolder(View itemView) {
@@ -130,7 +140,7 @@ public class PhotoImageAdapter extends RecyclerView.Adapter<PhotoImageAdapter.Vi
             this.itemView = itemView;
             photo_image = (SimpleDraweeView) itemView.findViewById(R.id.photo_image);
             photo_mask = itemView.findViewById(R.id.photo_mask);
-            photo_check = (ImageView) itemView.findViewById(R.id.photo_check);
+            photo_delete = (ImageView) itemView.findViewById(R.id.photo_delete);
             itemView.setTag(R.layout.imageselector_item_image,this);
         }
 
@@ -157,6 +167,8 @@ public class PhotoImageAdapter extends RecyclerView.Adapter<PhotoImageAdapter.Vi
         if (layoutParams.height != mItemSize) {
             holder.itemView.setLayoutParams(mItemLayoutParams);
         }
+
+
         if (viewType == TYPE_CAMERA) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -167,33 +179,50 @@ public class PhotoImageAdapter extends RecyclerView.Adapter<PhotoImageAdapter.Vi
                 }
             });
         }else if(viewType == TYPE_NORMAL) {
+            final PhotoModel photoModel = imageList.get(showCamera ? position - 1 : position);
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     if(listener != null){
-                        PhotoModel photoModel = imageList.get(showCamera ? position - 1 : position);
                         listener.onImageClick(view,position,photoModel);
                     }
                 }
             });
-        }
+            holder.photo_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(listener != null){
+                        listener.onDeleteClick(view,position,photoModel);
+                    }
+                }
+            });
+            if(holder.photo_image == null)
+                return;
+            if (mItemSize > 0) {
+                final ViewHolder fholder = holder;
+                fholder.photo_image.setBackgroundColor(Color.WHITE);
+                String path = photoModel.getPath();
+//            Uri imageUri = Uri.parse("http://pic38.nipic.com/20140225/3554136_195849520358_2.jpg");
+                Uri imageUri = Uri.parse("file://"+path);
 
-        if(holder.photo_image == null)
-            return;
-        if (mItemSize > 0) {
-            final ViewHolder fholder = holder;
-            fholder.photo_image.setBackgroundColor(Color.WHITE);
-//            String path = getItem(position).getPath();
-            Uri imageUri = Uri.parse("http://pic38.nipic.com/20140225/3554136_195849520358_2.jpg");
+                if(imageUri != null) {
+                    ImageRequest request = ImageRequestBuilder
+                             .newBuilderWithSource(imageUri)
+                             .setResizeOptions(new ResizeOptions(mItemSize, mItemSize))
+                             .build();
 
-            if(imageUri != null) {
-                DraweeController controller = Fresco.newDraweeControllerBuilder()
-                        .setUri(imageUri)
-                        .setCallerContext("ZoomableApp-MyPagerAdapter")
-                        .build();
-                fholder.photo_image.setController(controller);
+                     DraweeController controller = Fresco.newDraweeControllerBuilder()
+                             .setOldController(fholder.photo_image.getController())
+                             .setCallerContext("ZoomableApp-MyPagerAdapter")
+                             .setImageRequest(request)
+                             .build();
+                     fholder.photo_image.setController(controller);
+                }
             }
         }
+
+
     }
 
     @Override

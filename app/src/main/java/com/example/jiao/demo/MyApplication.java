@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 
 import com.example.jiao.demo.crash.CrashHandler;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.orhanobut.logger.AndroidLogTool;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
@@ -26,7 +27,9 @@ public class MyApplication extends Application {
             StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
             StrictMode.setVmPolicy(builder.build());
         }
-        Fresco.initialize(this);
+        ImagePipelineConfig pipelineConfig = ImagePipelineConfig.newBuilder(getApplicationContext())
+                .setDownsampleEnabled(true).build();
+        Fresco.initialize(this,pipelineConfig);
 //        GlobalVariableV.context = getApplicationContext();
 //        try {
 //            DBManager.getInstance(getApplicationContext());
