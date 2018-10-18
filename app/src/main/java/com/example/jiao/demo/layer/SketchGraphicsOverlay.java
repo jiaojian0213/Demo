@@ -29,6 +29,7 @@ import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
+import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
 import com.esri.core.symbol.SimpleFillSymbol;
@@ -157,6 +158,10 @@ public class SketchGraphicsOverlay implements Observer {
         if (mDrawingMode == DrawingMode.POLYLINE || mDrawingMode == DrawingMode.POLYGON) {
             mCurrentPointCollection = new PointCollection(mMapView.getSpatialReference());
         }
+    }
+
+    public DrawingMode getDrawingMode(){
+        return mDrawingMode;
     }
 
     /**
@@ -1128,6 +1133,31 @@ public class SketchGraphicsOverlay implements Observer {
 //        }catch (Exception e){e.printStackTrace();}
 //        return null;
 //    }
+
+    public String getPolygonArea(){
+        String areaResultStr = WKTUtils.formatArea(WKTUtils.calculateArea2D(mCurrentPolygon.getGeometry()));
+        return areaResultStr;
+    }
+
+    public String getPolygonDistance(){
+        try {
+            double length = 0;
+            int pathCount = mCurrentPointCollection.size();
+            for (int i = 0; i < pathCount - 1; i++) {
+                Point pointStart = mCurrentPointCollection.get(i);
+                Point pointEnd = mCurrentPointCollection.get(i + 1);
+                length += GeometryEngine.geodesicDistance(pointStart, pointEnd, SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR), null);
+            }
+            Logger.i("length2 = " + length);
+            String lengthResultStr = "" + WKTUtils.formatArea(length);
+            return lengthResultStr;
+        }catch (Exception e){
+            double length = mCurrentLine.getGeometry().calculateLength2D();
+            Logger.i("length1 = "+ length);
+            String lengthResultStr = "" + WKTUtils.formatArea(length);
+            return lengthResultStr;
+        }
+    }
 
     public String getPolygonString(){
         try {

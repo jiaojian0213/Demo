@@ -385,7 +385,14 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     });
             return;
         }
-        showDialog("您计算的结果为xxxx", new DialogInterface.OnClickListener() {
+        SketchGraphicsOverlay.DrawingMode drawingMode = sketchGraphicsOverlay.getDrawingMode();
+        String result = "";
+        if(drawingMode == SketchGraphicsOverlay.DrawingMode.POLYGON){
+            result = sketchGraphicsOverlay.getPolygonArea()+"亩";
+        }else if(drawingMode == SketchGraphicsOverlay.DrawingMode.POLYLINE){
+            result = sketchGraphicsOverlay.getPolygonDistance()+"米";
+        }
+        showDialog("您计算的结果为"+result, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
