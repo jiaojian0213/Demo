@@ -8,6 +8,7 @@ import com.example.jiao.demo.dao.CitySiteModelDao;
 import com.example.jiao.demo.dao.DaoMaster;
 import com.example.jiao.demo.dao.DaoSession;
 import com.example.jiao.demo.dao.PhotoModelDao;
+import com.example.jiao.demo.dao.TrajectoryModelDao;
 import com.github.yuweiguocn.library.greendao.MigrationHelper;
 
 import org.greenrobot.greendao.database.Database;
@@ -55,6 +56,7 @@ public class DBManager {
         private Class[] dataModelClass = new Class[]{
                 CitySiteModelDao.class,
                 PhotoModelDao.class,
+                TrajectoryModelDao.class,
         };
 
         public MySQLiteOpenHelper(Context context, String name) {
