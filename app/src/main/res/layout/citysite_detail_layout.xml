@@ -315,16 +315,17 @@
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
                         android:layout_centerVertical="true"
+                        android:visibility="gone"
                         />
 
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_hasInner"
+                    <CheckBox
+                        android:id="@+id/cb_hasInner"
+                        android:layout_marginLeft="-10px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="请输入有无内城"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
+                        android:text="有无内城"
+                        android:paddingLeft="0dp"
                         style="@style/info_edit_style"
                         />
 
@@ -380,6 +381,7 @@
                     android:layout_height="122px"
                     android:paddingLeft="40px"
                     android:paddingRight="40px"
+                    android:id="@+id/inner_layout"
                     android:gravity="center_vertical"
                     android:background="@color/white"
                     android:orientation="horizontal">
@@ -431,16 +433,17 @@
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
                         android:layout_centerVertical="true"
+                        android:visibility="gone"
                         />
 
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_hasWengCity"
+                    <CheckBox
+                        android:id="@+id/cb_hasWengCity"
+                        android:layout_marginLeft="-10px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:text="有无翁城"
                         android:hint="请输入有无翁城"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         />
 
@@ -469,16 +472,17 @@
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
                         android:layout_centerVertical="true"
+                        android:visibility="gone"
                         />
 
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_hasWall"
+                    <CheckBox
+                        android:id="@+id/cb_hasWall"
+                        android:layout_marginLeft="-10px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:text="有无墙体"
                         android:hint="请输入有无墙体"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         />
 
@@ -568,6 +572,7 @@
                 </com.zhy.autolayout.AutoRelativeLayout>
 
                 <com.zhy.autolayout.AutoRelativeLayout
+                    android:id="@+id/wallComposition_layout"
                     android:layout_width="match_parent"
                     android:layout_height="122px"
                     android:paddingLeft="40px"
@@ -622,16 +627,17 @@
                         android:textSize="40px"
                         android:textColorHint="#bbbbbb"
                         android:layout_centerVertical="true"
+                        android:visibility="gone"
                         />
 
-                    <EditText
-                        android:layout_marginLeft="400px"
-                        android:id="@+id/et_hasRepaired"
+                    <CheckBox
+                        android:id="@+id/cb_hasRepaired"
+                        android:layout_marginLeft="-10px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:text="是否维修过"
                         android:hint="请输入是否维修过"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
                         style="@style/info_edit_style"
                         />
 
@@ -644,6 +650,7 @@
                 </com.zhy.autolayout.AutoRelativeLayout>
 
                 <com.zhy.autolayout.AutoRelativeLayout
+                    android:id="@+id/repairTime_layout"
                     android:layout_width="match_parent"
                     android:layout_height="122px"
                     android:paddingLeft="40px"
@@ -756,7 +763,7 @@
 
                 <com.zhy.autolayout.AutoRelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="122px"
+                    android:layout_height="300px"
                     android:paddingLeft="40px"
                     android:paddingRight="40px"
                     android:gravity="center_vertical"
@@ -774,14 +781,19 @@
                         />
 
                     <EditText
-                        android:layout_marginLeft="400px"
+                        android:layout_marginLeft="200px"
                         android:id="@+id/et_detail"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:hint="请输入详细信息"
-                        android:layout_toLeftOf="@+id/bt_sm_sfz"
-                        style="@style/info_edit_style" />
+                        android:maxLines="5"
+                        android:textColor="#333333"
+                        android:textSize="40px"
+                        android:textColorHint="#bbbbbb"
+                        android:background="@null"
+                        android:imeOptions="actionDone"
+                        />
 
                     <View
                         android:layout_width="match_parent"
@@ -791,7 +803,11 @@
                         />
                 </com.zhy.autolayout.AutoRelativeLayout>
 
-
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#ececec"
+                    />
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"

@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -35,6 +37,7 @@ import com.example.jiao.demo.utils.PermissionUtils;
 import com.example.jiao.demo.view.MyToolbar;
 import com.orhanobut.logger.Logger;
 import com.zhy.autolayout.AutoLinearLayout;
+import com.zhy.autolayout.AutoRelativeLayout;
 
 import java.io.File;
 import java.util.List;
@@ -55,7 +58,7 @@ import static android.R.attr.type;
  * Created by jiaojian on 2018/10/17.
  */
 @RuntimePermissions
-public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, PhotoImageAdapter.OnItemClickListener {
+public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.OnGlobalLayoutListener, PhotoImageAdapter.OnItemClickListener, CompoundButton.OnCheckedChangeListener {
 
     @Bind(R.id.toolbar)
     MyToolbar toolbar;
@@ -73,22 +76,16 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
     EditText etFindCompany;
     @Bind(R.id.et_type)
     EditText etType;
-    @Bind(R.id.et_hasInner)
-    EditText etHasInner;
     @Bind(R.id.et_outerArea)
     EditText etOuterArea;
     @Bind(R.id.et_innerArea)
     EditText etInnerArea;
-    @Bind(R.id.et_hasWall)
-    EditText etHasWall;
     @Bind(R.id.et_integrity)
     EditText etIntegrity;
     @Bind(R.id.et_height)
     EditText etHeight;
     @Bind(R.id.et_wallComposition)
     EditText etWallComposition;
-    @Bind(R.id.et_hasRepaired)
-    EditText etHasRepaired;
     @Bind(R.id.et_repairTime)
     EditText etRepairTime;
     @Bind(R.id.et_features)
@@ -103,10 +100,20 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
     ScrollView scrollView;
     @Bind(R.id.tv_msg)
     TextView tvMsg;
-    @Bind(R.id.et_hasWengCity)
-    EditText etHasWengCity;
-//    @Bind(R.id.photo_gridView)
-//    GridView photoGridView;
+    @Bind(R.id.cb_hasInner)
+    CheckBox cbHasInner;
+    @Bind(R.id.inner_layout)
+    AutoRelativeLayout innerLayout;
+    @Bind(R.id.cb_hasWengCity)
+    CheckBox cbHasWengCity;
+    @Bind(R.id.cb_hasWall)
+    CheckBox cbHasWall;
+    @Bind(R.id.wallComposition_layout)
+    AutoRelativeLayout wallCompositionLayout;
+    @Bind(R.id.cb_hasRepaired)
+    CheckBox cbHasRepaired;
+    @Bind(R.id.repairTime_layout)
+    AutoRelativeLayout repairTimeLayout;
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
     private File tempFile;
@@ -135,6 +142,15 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
                 return true;
             }
         });
+
+        cbHasInner.setOnCheckedChangeListener(this);
+        cbHasRepaired.setOnCheckedChangeListener(this);
+        cbHasWall.setOnCheckedChangeListener(this);
+        cbHasWengCity.setOnCheckedChangeListener(this);
+        innerLayout.setVisibility(View.GONE);
+        repairTimeLayout.setVisibility(View.GONE);
+        wallCompositionLayout.setVisibility(View.GONE);
+
         Intent intent = getIntent();
         long city_site_id = intent.getLongExtra(CITY_SITE_ID, 0);
 
@@ -166,7 +182,7 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
 //            photoModels.add(photoModel);
 //        }
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(this);
-        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),3));
+        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(), 3));
         recyclerView.addItemDecoration(new MarginDecoration(getApplicationContext()));
 //        recyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(),
 //                DividerItemDecoration.VERTICAL));
@@ -178,20 +194,20 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
         Logger.i("aaa = " + citySiteModel.getId());
 
         initPhotoModel();
-   }
+    }
 
-   public void initPhotoModel(){
-       DBManager.getInstance(getApplicationContext()).getWritDao()
-               .getPhotoModelDao().queryBuilder()
-               .where(PhotoModelDao.Properties.TaskId.eq(citySiteModel.getId()))
-               .rxPlain().list()
-               .subscribe(new Action1<List<PhotoModel>>() {
-                   @Override
-                   public void call(List<PhotoModel> photoModels) {
-                       imageAdapter.setData(photoModels);
-                   }
-               });
-   }
+    public void initPhotoModel() {
+        DBManager.getInstance(getApplicationContext()).getWritDao()
+                .getPhotoModelDao().queryBuilder()
+                .where(PhotoModelDao.Properties.TaskId.eq(citySiteModel.getId()))
+                .rxPlain().list()
+                .subscribe(new Action1<List<PhotoModel>>() {
+                    @Override
+                    public void call(List<PhotoModel> photoModels) {
+                        imageAdapter.setData(photoModels);
+                    }
+                });
+    }
 
     public void setTextStr(EditText view, String string) {
         view.setText(string == null ? "" : string);
@@ -205,14 +221,15 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
         etFindTime.setText(citySiteModel.getFindTime());
         etFindCompany.setText(citySiteModel.getFindCompany());
         etType.setText(citySiteModel.getType());
-//        etHasInner.setText(citySiteModel.getHasInner());
-//        etOuterArea.setText(citySiteModel.getOuterArea());
-//        etInnerArea.setText(citySiteModel.getInnerArea());
-//        etHasWall.setText(citySiteModel.getHasWall());
+        cbHasInner.setChecked(citySiteModel.getHasInner());
+        etInnerArea.setText(""+citySiteModel.getInnerArea());
+        etOuterArea.setText(""+citySiteModel.getOuterArea());
+        cbHasWall.setChecked(citySiteModel.getHasWall());
+        cbHasWengCity.setChecked(citySiteModel.getHasWengCity());
         etIntegrity.setText(citySiteModel.getIntegrity());
         etHeight.setText(citySiteModel.getHeight());
         etWallComposition.setText(citySiteModel.getWallComposition());
-//        etHasRepaired.setText(citySiteModel.getHasRepaired());
+        cbHasRepaired.setChecked(citySiteModel.getHasRepaired());
         etRepairTime.setText(citySiteModel.getRepairTime());
         etFeatures.setText(citySiteModel.getFeatures());
         etProtectType.setText(citySiteModel.getProtectType());
@@ -227,15 +244,15 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
         String findTime = getTextStr(etFindTime);
         String findCompany = getTextStr(etFindCompany);
         String type = getTextStr(etType);
-        String hasInner = getTextStr(etHasInner);
+        boolean hasInner = cbHasInner.isChecked();
         String outerArea = getTextStr(etOuterArea);
         String innerArea = getTextStr(etInnerArea);
-        String hasWengCity = getTextStr(etHasWengCity);
-        String hasWall = getTextStr(etHasWall);
+        boolean hasWengCity = cbHasWengCity.isChecked();
+        boolean hasWall = cbHasWall.isChecked();
         String integrity = getTextStr(etIntegrity);
         String height = getTextStr(etHeight);
         String wallComposition = getTextStr(etWallComposition);
-        String hasRepaired = getTextStr(etHasRepaired);
+        boolean hasRepaired = cbHasRepaired.isChecked();
         String repairTime = getTextStr(etRepairTime);
         String features = getTextStr(etFeatures);
         String protectType = getTextStr(etProtectType);
@@ -248,15 +265,15 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
         citySiteModel.setFindTime(findTime);
         citySiteModel.setFindCompany(findCompany);
         citySiteModel.setType(type);
-//        citySiteModel.setHasInner(true);
-//        citySiteModel.setOuterArea(outerArea);
-//        citySiteModel.setInnerArea(innerArea);
-//        citySiteModel.setHasWall(true);
-//        citySiteModel.setHasWengCity(hasWengCity);
+        citySiteModel.setHasInner(hasInner);
+        citySiteModel.setOuterArea(Double.valueOf(outerArea));
+        citySiteModel.setInnerArea(Double.valueOf(innerArea));
+        citySiteModel.setHasWall(hasWall);
+        citySiteModel.setHasWengCity(hasWengCity);
         citySiteModel.setIntegrity(integrity);
         citySiteModel.setHeight(height);
         citySiteModel.setWallComposition(wallComposition);
-        citySiteModel.setHasRepaired(true);
+        citySiteModel.setHasRepaired(hasRepaired);
         citySiteModel.setRepairTime(repairTime);
         citySiteModel.setFeatures(features);
         citySiteModel.setProtectType(protectType);
@@ -382,7 +399,9 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
             } else {
                 recyclerView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
             }
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -394,7 +413,7 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
     public void onImageClick(View view, int position, PhotoModel photoModel) {
 //        Logger.i("点击");
         Intent intent = new Intent(getApplicationContext(), PhotoBigActivity.class);
-        intent.putExtra("itemImage",""+photoModel.getPath());
+        intent.putExtra("itemImage", "" + photoModel.getPath());
         startActivity(intent);
     }
 
@@ -408,5 +427,20 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
                         .getPhotoModelDao().delete(photoModel);
             }
         });
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        switch (compoundButton.getId()){
+            case R.id.cb_hasInner:
+                innerLayout.setVisibility(b?View.VISIBLE:View.GONE);
+                break;
+            case R.id.cb_hasRepaired:
+                repairTimeLayout.setVisibility(b?View.VISIBLE:View.GONE);
+                break;
+            case R.id.cb_hasWall:
+                wallCompositionLayout.setVisibility(b?View.VISIBLE:View.GONE);
+                break;
+        }
     }
 }

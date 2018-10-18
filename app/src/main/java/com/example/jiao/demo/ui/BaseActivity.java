@@ -175,13 +175,14 @@ public class BaseActivity extends SwipeBackActivity implements ServiceConnection
                 }).setPositiveButton("确定", listener).show();
     }
 
-    public void showDialog(String content, DialogInterface.OnClickListener oklistener,DialogInterface.OnClickListener listener){
+    public AlertDialog showDialog(String content, DialogInterface.OnClickListener oklistener,DialogInterface.OnClickListener listener){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog alertDialog = builder
                 .setTitle("提醒")
                 .setMessage(content)
                 .setNegativeButton("取消", listener)
                 .setPositiveButton("确定", oklistener).show();
+        return alertDialog;
     }
 
     public void initGPS() {

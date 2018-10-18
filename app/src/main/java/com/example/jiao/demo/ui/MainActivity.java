@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -28,14 +29,19 @@ import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
+import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.GeometryEngine;
+import com.esri.core.geometry.MapGeometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polyline;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.esri.core.symbol.PictureMarkerSymbol;
+import com.esri.core.symbol.SimpleLineSymbol;
 import com.example.jiao.demo.Constants;
 import com.example.jiao.demo.R;
 import com.example.jiao.demo.daomodel.CitySiteModel;
+import com.example.jiao.demo.daomodel.TrajectoryModel;
 import com.example.jiao.demo.layer.PeaceGraphicsLayer;
 import com.example.jiao.demo.layer.PointCollection;
 import com.example.jiao.demo.layer.SketchGraphicsOverlay;
@@ -47,6 +53,10 @@ import com.example.jiao.demo.utils.WKTUtils;
 import com.example.jiao.demo.view.MyToolbar;
 import com.orhanobut.logger.Logger;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonParser;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,6 +148,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private SensorManager manager;
     private PointCollection trackroutePoints;
     private PeaceGraphicsLayer tempTrackrouteLayer;
+    private AlertDialog trackrouteDialog;
+    private SimpleLineSymbol lineSym;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +162,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         picSymbol = new PictureMarkerSymbol(locationDrawable);
         Drawable markerDrawable = getResources().getDrawable(R.drawable.marker_icon);
         markerSymbol = new PictureMarkerSymbol(markerDrawable);
+
+        lineSym = new SimpleLineSymbol(Color.RED, 3);
 
         toolbar.setTitle("Demo");
         toolbar.setNavigationIcon(null);
@@ -233,11 +247,27 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         addCitySitesToLayer(citySiteModels);
                     }
                 });
+
+        DBManager.getInstance(getApplicationContext()).getWritDao()
+                .getTrajectoryModelDao()
+                .rxPlain().loadAll()
+                .subscribe(new Action1<List<TrajectoryModel>>() {
+                    @Override
+                    public void call(List<TrajectoryModel> trajectoryModels) {
+                        addTrajectoryModelToLayer(trajectoryModels);
+                    }
+                });
     }
 
     public void addCitySitesToLayer(List<CitySiteModel> citySiteModels) {
         for (int i = 0; i < citySiteModels.size(); i++) {
             addCitySiteToLayer(citySiteModels.get(i));
+        }
+    }
+
+    public void addTrajectoryModelToLayer(List<TrajectoryModel> trajectoryModels) {
+        for (int i = 0; i < trajectoryModels.size(); i++) {
+            addTrajectoryModelToLayer(trajectoryModels.get(i));
         }
     }
 
@@ -248,6 +278,18 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         map.put(CITY_SITE_ID, citySiteModel.getId());
         Graphic graphic = new Graphic(point, markerSymbol, map);
         citySiteLayer.addGraphic(graphic);
+    }
+
+    public void addTrajectoryModelToLayer(TrajectoryModel trajectoryModel){
+        try {
+            String points = trajectoryModel.getPoints();
+            JsonParser jsonParser = new JsonFactory().createJsonParser(points);
+            MapGeometry mapGeometry = GeometryEngine.jsonToGeometry(jsonParser);
+            Geometry geometry = mapGeometry.getGeometry();
+            Graphic graphic = new Graphic(geometry, lineSym);
+            trajectoryLayer.addGraphic(graphic);
+        }catch (Exception e){e.printStackTrace();}
+
     }
 
     private void onMarkerClick(float v, float v1) {
@@ -526,10 +568,52 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         trackroutePoints.clear();
                     }
                 }else{
-                    trackroutePoints.clear();
+                    trackrouteDialog = showDialog("是否保存当前轨迹记录？", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            saveTrackrouteInfo();
+                            trackroutePoints.clear();
+                        }
+                    }, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            trackroutePoints.clear();
+                            tempTrackrouteLayer.removeAll();
+                        }
+                    });
                 }
                 break;
         }
+    }
+
+    public void saveTrackrouteInfo(){
+        Logger.i("save inof");
+        int[] graphicIDs = tempTrackrouteLayer.getGraphicIDs();
+        if(graphicIDs != null) {
+            Graphic[] graphics = new Graphic[graphicIDs.length];
+            ArrayList<TrajectoryModel> trajectoryModels = new ArrayList<>();
+            for (int i = 0; i < graphicIDs.length; i++) {
+                graphics[i] = tempTrackrouteLayer.getGraphic(graphicIDs[i]);
+                String points = GeometryEngine.geometryToJson(mapview.getSpatialReference(), graphics[i].getGeometry());
+                TrajectoryModel trajectoryModel = new TrajectoryModel();
+                trajectoryModel.setPoints(points);
+                trajectoryModels.add(trajectoryModel);
+            }
+            trajectoryLayer.addGraphics(graphics);
+            tempTrackrouteLayer.removeAll();
+            DBManager.getInstance(getApplicationContext()).getWritDao()
+                    .getTrajectoryModelDao().rxPlain()
+                    .insertInTx(trajectoryModels)
+                    .subscribe(new Action1<Iterable<TrajectoryModel>>() {
+                        @Override
+                        public void call(Iterable<TrajectoryModel> trajectoryModels) {
+                            Logger.i("保存成功");
+                        }
+                    });
+        }
+
+
+//        trackroutePoints
     }
 
     @Override
@@ -539,9 +623,14 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             trackroutePoints.add(Constants.mapPoint);
             //TODO 绘制路线到临时图层 tempTrackrouteLayer
             Polyline lastPolyline = trackroutePoints.getLastPolyline();
+            Graphic graphic = new Graphic(lastPolyline, lineSym);
+            int[] graphicIDs = tempTrackrouteLayer.getGraphicIDs();
+            if(graphicIDs == null || graphicIDs.length == 0) {
+                tempTrackrouteLayer.addGraphic(graphic);
+            }else{
+                tempTrackrouteLayer.updateGraphic(graphicIDs[0],graphic);
+            }
         }
-
-
     }
 
     @Override
