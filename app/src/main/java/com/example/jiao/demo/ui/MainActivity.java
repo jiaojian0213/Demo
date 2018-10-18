@@ -12,6 +12,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -536,9 +537,10 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         super.locationChange(location);
         if(btTrackroute.isSelected()){
             trackroutePoints.add(Constants.mapPoint);
+            //TODO 绘制路线到临时图层 tempTrackrouteLayer
+            Polyline lastPolyline = trackroutePoints.getLastPolyline();
         }
-        //TODO 绘制路线到临时图层 tempTrackrouteLayer
-        Polyline lastPolyline = trackroutePoints.getLastPolyline();
+
 
     }
 
@@ -598,5 +600,23 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @Override
+    public void onBackPressedSupport() {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("提醒")
+                .setMessage("是否退出程序")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
+
+                }).setNegativeButton("取消",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        }).create(); // 创建对话框
+        alertDialog.show(); // 显示对话框
     }
 }
