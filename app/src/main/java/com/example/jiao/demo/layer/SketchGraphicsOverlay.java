@@ -187,7 +187,9 @@ public class SketchGraphicsOverlay implements Observer {
      */
     public void undo() {
         // Handle an undo event, popping an event from the undo stack and pushing a new event to the redo stack
-        handleUndoRedoEvent(mUndoElementStack, mRedoElementStack);
+        try {
+            handleUndoRedoEvent(mUndoElementStack, mRedoElementStack);
+        }catch (Exception e){e.printStackTrace();}
     }
 
     /**
@@ -195,7 +197,9 @@ public class SketchGraphicsOverlay implements Observer {
      */
     public void redo() {
         // Handle an redo event, popping an event from the redo stack and pushing a new event to the undo stack
+        try {
         handleUndoRedoEvent(mRedoElementStack, mUndoElementStack);
+        }catch (Exception e){e.printStackTrace();}
     }
 
     /**
@@ -234,7 +238,8 @@ public class SketchGraphicsOverlay implements Observer {
                     // disable to selected drawing mode
                     areaGraphic = null;
                     mGraphics.clear();
-                    mCurrentPointCollection.clear();
+                    if(mCurrentPointCollection != null)
+                        mCurrentPointCollection.clear();
                     mGraphicsOverlay.removeAll();
                     points = null;
                     mListener.onDrawingFinished();

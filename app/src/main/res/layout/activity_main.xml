@@ -24,6 +24,7 @@
 
 
     <RelativeLayout
+        android:id="@+id/buttom_layout"
         android:background="@color/background_material_dark"
         android:layout_height="wrap_content"
         android:layout_width="0dp"
@@ -105,7 +106,7 @@
             android:layout_alignParentTop="true"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:src="@drawable/ic_action_clear"
+            android:src="@drawable/icon_finish"
             android:onClick="finishClick"/>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

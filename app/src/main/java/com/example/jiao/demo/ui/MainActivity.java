@@ -29,6 +29,7 @@ import com.example.jiao.demo.layer.SketchGraphicsOverlayEventListener;
 import com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer;
 import com.example.jiao.demo.manager.DBManager;
 import com.example.jiao.demo.utils.WKTUtils;
+import com.example.jiao.demo.view.MyToolbar;
 import com.orhanobut.logger.Logger;
 
 import java.util.HashMap;
@@ -61,10 +62,6 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     RelativeLayout controllerLayout;
     @Bind(R.id.mapview)
     MapView mapview;
-    @Bind(R.id.bt_layer1)
-    ImageView btLayer1;
-    @Bind(R.id.bt_layer2)
-    ImageView btLayer2;
     @Bind(R.id.cb_citySite)
     CheckBox cbCitySite;
     @Bind(R.id.cb_trajectory)
@@ -85,6 +82,16 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     ImageButton redoButton;
     @Bind(R.id.clearButton)
     ImageButton clearButton;
+    @Bind(R.id.toolbar)
+    MyToolbar toolbar;
+    @Bind(R.id.bt_measure)
+    ImageView btMeasure;
+    @Bind(R.id.finishButton)
+    ImageButton finishButton;
+    @Bind(R.id.buttom_layout)
+    RelativeLayout buttomLayout;
+    @Bind(R.id.bt_addMarker)
+    ImageView btAddMarker;
     private TianDiTuTiledMapServiceLayer vecLayer;
     private TianDiTuTiledMapServiceLayer imgLayer;
     private TianDiTuTiledMapServiceLayer cvaLayer;
@@ -98,11 +105,12 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private OnSingleTapListener onSingleTapListener = new OnSingleTapListener() {
         @Override
         public void onSingleTap(float v, float v1) {
-            if(btLayer1.isSelected())
-                onAddMarkerClick(v,v1);
-            onMarkerClick(v,v1);
+            if (btAddMarker.isSelected())
+                onAddMarkerClick(v, v1);
+            onMarkerClick(v, v1);
         }
     };
+    private PictureMarkerSymbol markerSymbol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,8 +119,17 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         ButterKnife.bind(this);
         ArcGISRuntime.setClientId("9yNxBahuPiGPbsdi");//去水印
 
-        Drawable drawable = getResources().getDrawable(R.drawable.location2);
-        picSymbol = new PictureMarkerSymbol(drawable);
+        Drawable locationDrawable = getResources().getDrawable(R.drawable.location2);
+        picSymbol = new PictureMarkerSymbol(locationDrawable);
+        Drawable markerDrawable = getResources().getDrawable(R.drawable.marker_icon);
+        markerSymbol = new PictureMarkerSymbol(markerDrawable);
+
+        btLayer.setSelected(false);
+        mapLayer.setVisibility(View.GONE);
+        btAddMarker.setSelected(false);
+        btMeasure.setSelected(false);
+        buttomLayout.setVisibility(View.GONE);
+
 
         vecLayer = new TianDiTuTiledMapServiceLayer(VEC_W);
         cvaLayer = new TianDiTuTiledMapServiceLayer(CVA_W);
@@ -142,15 +159,17 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         cbCitySite.setOnCheckedChangeListener(this);
         cbTrajectory.setOnCheckedChangeListener(this);
 
+        btLayer.setOnClickListener(this);
+        btAddMarker.setOnClickListener(this);
+        btMeasure.setOnClickListener(this);
         btLocation.setOnClickListener(this);
-        btLayer1.setOnClickListener(this);
 
         startLocation();
 
         initData();
     }
 
-    public void initData(){
+    public void initData() {
         DBManager.getInstance(getApplicationContext()).getWritDao()
                 .getCitySiteModelDao()
                 .rxPlain().loadAll()
@@ -162,54 +181,54 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 });
     }
 
-    public void addCitySitesToLayer(List<CitySiteModel> citySiteModels){
-        for(int i = 0;i< citySiteModels.size();i++){
+    public void addCitySitesToLayer(List<CitySiteModel> citySiteModels) {
+        for (int i = 0; i < citySiteModels.size(); i++) {
             addCitySiteToLayer(citySiteModels.get(i));
         }
     }
 
-    public void addCitySiteToLayer(CitySiteModel citySiteModel){
+    public void addCitySiteToLayer(CitySiteModel citySiteModel) {
         Point point = new Point(Double.valueOf(citySiteModel.getLongitude()), Double.valueOf(citySiteModel.getLatitude()));
         point = WKTUtils.change4326To3857(point);
         Map<String, Object> map = new HashMap<>();
-        map.put(CITY_SITE_ID,citySiteModel.getId());
-        Graphic graphic = new Graphic(point, picSymbol,map);
+        map.put(CITY_SITE_ID, citySiteModel.getId());
+        Graphic graphic = new Graphic(point, markerSymbol, map);
         citySiteLayer.addGraphic(graphic);
     }
 
     private void onMarkerClick(float v, float v1) {
         int[] graphicIDs = citySiteLayer.getGraphicIDs(v, v1, 12);
-        if(graphicIDs == null || graphicIDs.length == 0)
+        if (graphicIDs == null || graphicIDs.length == 0)
             return;
-        for(int i = 0;i < graphicIDs.length;i++){
+        for (int i = 0; i < graphicIDs.length; i++) {
             Graphic graphic = citySiteLayer.getGraphic(graphicIDs[i]);
             Object attrValue = graphic.getAttributeValue(CITY_SITE_ID);
-            if(attrValue != null){
+            if (attrValue != null) {
                 Long citySiteId = (Long) attrValue;
                 Logger.i("citySiteId = " + citySiteId);
                 Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
-                intent.putExtra(CITY_SITE_ID,citySiteId);
+                intent.putExtra(CITY_SITE_ID, citySiteId);
                 startActivity(intent);
                 break;
             }
         }
     }
 
-    public void onAddMarkerClick(float x, float y){
+    public void onAddMarkerClick(float x, float y) {
         int[] graphicIds = tempLayer.getGraphicIDs();
-        if(graphicIds != null && graphicIds.length > 0){
+        if (graphicIds != null && graphicIds.length > 0) {
             markerPoint = mapview.toMapPoint(x, y);
-            Graphic graphic = new Graphic(markerPoint, picSymbol);
+            Graphic graphic = new Graphic(markerPoint, markerSymbol);
             tempLayer.updateGraphic(graphicIds[0], graphic);
-        }else {
+        } else {
             markerPoint = mapview.toMapPoint(x, y);
-            Graphic graphic = new Graphic(markerPoint, picSymbol);
+            Graphic graphic = new Graphic(markerPoint, markerSymbol);
             tempLayer.addGraphic(graphic);
         }
     }
 
     public void locationing() {
-        if(location == null)
+        if (location == null)
             return;
         mapview.centerAt(location.getLatitude(), location.getLongitude(), true);//116.33662  40.08895
         mapview.setScale(5000);
@@ -251,8 +270,8 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     @Override
     public void onRedoStateChanged(boolean redoEnabled) {
         // Set the redo button's enabled/disabled state based on the event boolean
-            redoButton.setEnabled(redoEnabled);
-            redoButton.setClickable(redoEnabled);
+        redoButton.setEnabled(redoEnabled);
+        redoButton.setClickable(redoEnabled);
     }
 
     @Override
@@ -340,13 +359,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     }
 
 
-    public void finishClick(View v){
-        if(btLayer1.isSelected()){
+    public void finishClick(View v) {
+        if (btAddMarker.isSelected()) {
             Point point = WKTUtils.change3857To4326(markerPoint);
             Logger.i("完成" + point);
             CitySiteModel citySiteModel = new CitySiteModel();
-            citySiteModel.setLongitude(""+point.getX());
-            citySiteModel.setLatitude(""+point.getY());
+            citySiteModel.setLongitude("" + point.getX());
+            citySiteModel.setLatitude("" + point.getY());
             DBManager.getInstance(getApplicationContext()).getWritDao()
                     .getCitySiteModelDao()
                     .rxPlain()
@@ -356,9 +375,11 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                         public void call(CitySiteModel citySiteModel) {
                             Logger.i("citySiteModel id = " + citySiteModel.getId());
                             addCitySiteToLayer(citySiteModel);
+                            buttomLayout.setVisibility(View.GONE);
+                            btAddMarker.setSelected(false);
                             tempLayer.removeAll();
                             Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
-                            intent.putExtra(CITY_SITE_ID,citySiteModel.getId());
+                            intent.putExtra(CITY_SITE_ID, citySiteModel.getId());
                             startActivity(intent);
                         }
                     });
@@ -374,13 +395,62 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.bt_location:
                 // mapview.centerAt(40.08895,116.33662,  true);//116.33662  40.08895
                 locationing();
                 break;
-            case R.id.bt_layer1:
-                btLayer1.setSelected(!btLayer1.isSelected());
+            case R.id.bt_layer:
+                btLayer.setSelected(!btLayer.isSelected());
+                if (btLayer.isSelected()) {
+                    mapLayer.setVisibility(View.VISIBLE);
+                } else {
+                    mapLayer.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.bt_measure:
+                if(btAddMarker.isSelected()) {
+                    btAddMarker.setSelected(false);
+                    buttomLayout.setVisibility(View.GONE);
+                    tempLayer.removeAll();
+                }
+                btMeasure.setSelected(!btMeasure.isSelected());
+                if (btMeasure.isSelected()) {
+                    buttomLayout.setVisibility(View.VISIBLE);
+                    for(int i = 0;i< buttomLayout.getChildCount();i++){
+                        View childView = buttomLayout.getChildAt(i);
+                        if(childView.getId() == R.id.pointButton)
+                            continue;
+                        childView.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    buttomLayout.setVisibility(View.GONE);
+                    sketchGraphicsOverlay.clear();
+                }
+                break;
+            case R.id.bt_addMarker:
+                if(btMeasure.isSelected()) {
+                    btMeasure.setSelected(false);
+                    buttomLayout.setVisibility(View.GONE);
+                    sketchGraphicsOverlay.clear();
+                }
+                btAddMarker.setSelected(!btAddMarker.isSelected());
+                if (btAddMarker.isSelected()) {
+                    buttomLayout.setVisibility(View.VISIBLE);
+                    for(int i = 0;i< buttomLayout.getChildCount();i++){
+                        View childView = buttomLayout.getChildAt(i);
+                        if(childView.getId() == R.id.finishButton){
+                            childView.setVisibility(View.VISIBLE);
+                        }else{
+                            childView.setVisibility(View.GONE);
+                        }
+                    }
+                } else {
+                    buttomLayout.setVisibility(View.GONE);
+                }
+                if(!btAddMarker.isSelected()){
+                    tempLayer.removeAll();
+                }
                 break;
         }
     }
