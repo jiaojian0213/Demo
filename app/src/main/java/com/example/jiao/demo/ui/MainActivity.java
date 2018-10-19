@@ -458,6 +458,10 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
     public void finishClick(View v) {
         if (btAddMarker.isSelected()) {
+            if(markerPoint == null){
+                Toast.makeText(getApplicationContext(),"请点击要添加的位置！",Toast.LENGTH_SHORT).show();
+                return;
+            }
             Point point = WKTUtils.change3857To4326(markerPoint);
             Logger.i("完成" + point);
             CitySiteModel citySiteModel = new CitySiteModel();
@@ -475,6 +479,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                             buttomLayout.setVisibility(View.GONE);
                             btAddMarker.setSelected(false);
                             tempLayer.removeAll();
+                            markerPoint = null;
                             Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
                             intent.putExtra(CITY_SITE_ID, citySiteModel.getId());
                             startActivity(intent);
@@ -540,6 +545,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     sketchGraphicsOverlay.clear();
                     mapview.setOnTouchListener(new MapOnTouchListener(getApplicationContext(),mapview));
                 }
+                markerPoint = null;
                 mapview.setOnSingleTapListener(onSingleTapListener);
                 btAddMarker.setSelected(!btAddMarker.isSelected());
                 if (btAddMarker.isSelected()) {
