@@ -199,7 +199,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         rbImgMap.setChecked(false);
         imgLayer.setVisible(false);
         imgLayer.setVisible(false);
-        trajectoryLayer.setVisible(false);
+        trajectoryLayer.setVisible(true);
 
         rbVecMap.setOnCheckedChangeListener(this);
         rbImgMap.setOnCheckedChangeListener(this);

@@ -7,6 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:actionBarSize">150px</item>
+
+        <!--在没有初始化完成的时候显示为透明，加速app启动-->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
     <style name="info_edit_style">
