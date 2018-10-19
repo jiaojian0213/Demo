@@ -21,6 +21,52 @@ import java.util.concurrent.RejectedExecutionException;
 public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
     private TianDiTuTiledMapServiceType _mapType;
     private TileInfo tiandituTileInfo;
+
+    double[] res={
+            156543.03392800014,
+            78271.516963999937,
+            39135.758482000092,
+            19567.879240999919,
+            9783.9396204999593,
+            4891.9698102499797,
+            2445.9849051249898,
+            1222.9924525624949,
+            611.49622628137968,
+            305.74811314055756,
+            152.87405657041106,
+            76.43702828507324,
+            38.21851414253662,
+            19.10925707126831,
+            9.554628535634155,
+            4.77731426794937,
+            2.388657133974685,
+            1.1943285668550503,
+            0.5971642835598172,
+            0.29858214164761665
+    };
+    double[] scale={
+            591657527.591555,
+            295828763.79577702,
+            147914381.89788899,
+            73957190.948944002,
+            36978595.474472001,
+            18489297.737236001,
+            9244648.8686180003,
+            4622324.4343090001,
+            2311162.2171550002,
+            1155581.108577,
+            577790.554289,
+            288895.277144,
+            144447.638572,
+            72223.819286,
+            36111.909643,
+            18055.954822,
+            9027.977411,
+            4513.988705,
+            2256.994353,
+            1128.497176
+    };
+
     public TianDiTuTiledMapServiceLayer() {
         this(null, null,true);
     }
@@ -74,6 +120,7 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
          this.setDefaultSpatialReference(SpatialReference.create(3857)); //GCS_WGS_1984
 //         this.setInitialExtent(new Envelope(8608652.792907715, 4728956.08831787, 9423041.921691895, 5329032.288330078));
 //         initializeMinMaxScale();
+         initializeMinMaxScale(scale[3],scale[19]);
          super.initLayer();
      }
       public void refresh()
@@ -136,7 +183,9 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
             httpUrl = (HttpURLConnection) sjwurl.openConnection();
             httpUrl.connect();
             //425字节
-            if(httpUrl.getContentLength() == 425)
+            if(httpUrl.getContentLength() == 425 ||
+                httpUrl.getContentLength() == 103||
+                httpUrl.getContentLength() == 213)
                 return null;
             bis = new BufferedInputStream(httpUrl.getInputStream());
             while (true) {
@@ -205,9 +254,9 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
             default:
                 return null;
         }
+//        Log.i("info","url = "+url.toString());
         return url.toString();
 //        String s = "http://t0.tianditu.com/cva_c/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=c&TILEMATRIX="+level+"&TILEROW="+row+"&TILECOL="+col+"&FORMAT=tiles";
-//        Log.i("info","url = "+s);
 //        return s;
     }
      
@@ -239,50 +288,7 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
 //                2.68220901489258E-06,
 //                1.34110450744629E-06
 //        };
-        double[] res={
-                156543.03392800014,
-                78271.516963999937,
-                39135.758482000092,
-                19567.879240999919,
-                9783.9396204999593,
-                4891.9698102499797,
-                2445.9849051249898,
-                1222.9924525624949,
-                611.49622628137968,
-                305.74811314055756,
-                152.87405657041106,
-                76.43702828507324,
-                38.21851414253662,
-                19.10925707126831,
-                9.554628535634155,
-                4.77731426794937,
-                2.388657133974685,
-                1.1943285668550503,
-                0.5971642835598172,
-                0.29858214164761665
-        };
-        double[] scale={
-                591657527.591555,
-                295828763.79577702,
-                147914381.89788899,
-                73957190.948944002,
-                36978595.474472001,
-                18489297.737236001,
-                9244648.8686180003,
-                4622324.4343090001,
-                2311162.2171550002,
-                1155581.108577,
-                577790.554289,
-                288895.277144,
-                144447.638572,
-                72223.819286,
-                36111.909643,
-                18055.954822,
-                9027.977411,
-                4513.988705,
-                2256.994353,
-                1128.497176
-        };
+
         int levels=21;
         int dpi=96;
         int tileWidth=256;
