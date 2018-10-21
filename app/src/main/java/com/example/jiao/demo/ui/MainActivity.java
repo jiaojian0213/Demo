@@ -14,6 +14,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import com.esri.android.map.MapOnTouchListener;
 import com.esri.android.map.MapView;
 import com.esri.android.map.event.OnSingleTapListener;
+import com.esri.android.map.event.OnStatusChangedListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.GeometryEngine;
@@ -48,6 +50,7 @@ import com.example.jiao.demo.layer.SketchGraphicsOverlay;
 import com.example.jiao.demo.layer.SketchGraphicsOverlayEventListener;
 import com.example.jiao.demo.layer.TianDiTuTiledMapServiceLayer;
 import com.example.jiao.demo.manager.DBManager;
+import com.example.jiao.demo.utils.MarkerUtils;
 import com.example.jiao.demo.utils.PermissionUtils;
 import com.example.jiao.demo.utils.WKTUtils;
 import com.example.jiao.demo.view.MyToolbar;
@@ -130,11 +133,14 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
     private TianDiTuTiledMapServiceLayer imgLayer;
     private TianDiTuTiledMapServiceLayer cvaLayer;
     private PeaceGraphicsLayer citySiteLayer;
+    private PeaceGraphicsLayer citySiteNameLayer;
     private PeaceGraphicsLayer trajectoryLayer;
     private PeaceGraphicsLayer tempLayer;
     private PeaceGraphicsLayer locationLayer;
     private SketchGraphicsOverlay sketchGraphicsOverlay;
     private Point markerPoint;
+
+    private static int CITY_SITE_DETAL_REQUESTCODE = 1024;
 
     private OnSingleTapListener onSingleTapListener = new OnSingleTapListener() {
         @Override
@@ -180,6 +186,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         cvaLayer = new TianDiTuTiledMapServiceLayer(CVA_W);
         imgLayer = new TianDiTuTiledMapServiceLayer(IMG_W);
         citySiteLayer = new PeaceGraphicsLayer();
+        citySiteNameLayer = new PeaceGraphicsLayer();
         trajectoryLayer = new PeaceGraphicsLayer();
         locationLayer = new PeaceGraphicsLayer();
         tempLayer = new PeaceGraphicsLayer();
@@ -188,6 +195,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         mapview.addLayer(imgLayer);
         mapview.addLayer(cvaLayer);
         mapview.addLayer(citySiteLayer);
+        mapview.addLayer(citySiteNameLayer);
         mapview.addLayer(trajectoryLayer);
         mapview.addLayer(locationLayer);
         mapview.addLayer(tempLayer);
@@ -214,6 +222,16 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
         MainActivityPermissionsDispatcher.locationStartWithCheck(this);
 
+        //初始化添加定位
+        mapview.setOnStatusChangedListener(new OnStatusChangedListener() {
+            @Override
+            public void onStatusChanged(Object o, STATUS status) {
+                if(status == STATUS.LAYER_LOADED){
+                    mapview.centerAt(33.368273, 106.272517,false);
+                    mapview.setScale(130000000);
+                }
+            }
+        });
         initData();
     }
 
@@ -279,6 +297,25 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         map.put(CITY_SITE_ID, citySiteModel.getId());
         Graphic graphic = new Graphic(point, markerSymbol, map);
         citySiteLayer.addGraphic(graphic);
+        addCitySiteNameToLayer(citySiteModel,point);
+    }
+
+    public void addCitySiteNameToLayer(CitySiteModel citySiteModel, Point point){
+        if(!TextUtils.isEmpty(citySiteModel.name)){
+            PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(citySiteModel.name,
+                    24, Color.RED, Color.TRANSPARENT, Color.TRANSPARENT);
+            Point point1 = new Point(point.getX(), point.getY());
+            Map<String, Object> textMap = new HashMap<>();
+            textMap.put(CITY_SITE_ID, citySiteModel.getId());
+            Graphic textGraphic = new Graphic(point1, textPicMarkerSymbol, textMap);
+            citySiteNameLayer.addGraphic(textGraphic);
+        }
+    }
+
+    public void addCitySiteNameToLayer(CitySiteModel citySiteModel){
+        Point point = new Point(Double.valueOf(citySiteModel.getLongitude()), Double.valueOf(citySiteModel.getLatitude()));
+        point = WKTUtils.change4326To3857(point);
+        addCitySiteNameToLayer(citySiteModel,point);
     }
 
     public void addTrajectoryModelToLayer(TrajectoryModel trajectoryModel){
@@ -305,7 +342,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 Logger.i("citySiteId = " + citySiteId);
                 Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
                 intent.putExtra(CITY_SITE_ID, citySiteId);
-                startActivity(intent);
+                startActivityForResult(intent,CITY_SITE_DETAL_REQUESTCODE);
                 break;
             }
         }
@@ -350,6 +387,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 break;
             case R.id.cb_citySite:
                 citySiteLayer.setVisible(b);
+                citySiteNameLayer.setVisible(b);
                 break;
             case R.id.cb_trajectory:
                 trajectoryLayer.setVisible(b);
@@ -482,7 +520,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                             markerPoint = null;
                             Intent intent = new Intent(getApplicationContext(), CitySiteActivity.class);
                             intent.putExtra(CITY_SITE_ID, citySiteModel.getId());
-                            startActivity(intent);
+                            startActivityForResult(intent,CITY_SITE_DETAL_REQUESTCODE);
                         }
                     });
             return;
@@ -714,5 +752,43 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                             }
                         }).create(); // 创建对话框
         alertDialog.show(); // 显示对话框
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CITY_SITE_DETAL_REQUESTCODE && resultCode == CitySiteActivity.REQULTCODE && data != null){
+            long citySiteId = data.getLongExtra(CITY_SITE_ID, -1);
+            DBManager.getInstance(getApplicationContext()).getWritDao()
+                    .getCitySiteModelDao().rxPlain().load(citySiteId)
+                    .subscribe(new Action1<CitySiteModel>() {
+                        @Override
+                        public void call(CitySiteModel citySiteModel) {
+                            updateCitySiteName(citySiteModel);
+                        }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            throwable.printStackTrace();
+                        }
+                    });
+        }
+    }
+
+    public void updateCitySiteName(CitySiteModel citySiteModel){
+        int[] graphicIDs = citySiteNameLayer.getGraphicIDs();
+        for(int i = 0 ;i< graphicIDs.length;i++){
+            Graphic graphic = citySiteNameLayer.getGraphic(graphicIDs[i]);
+            Object attributeValue = graphic.getAttributeValue(CITY_SITE_ID);
+            if(citySiteModel.getId().equals(attributeValue)){
+                PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(citySiteModel.name,
+                        24, Color.RED, Color.TRANSPARENT, Color.TRANSPARENT);
+                Map<String, Object> textMap = new HashMap<>();
+                textMap.put(CITY_SITE_ID, citySiteModel.getId());
+                citySiteNameLayer.updateGraphic(graphic,textPicMarkerSymbol);
+                return;
+            }
+        }
+        addCitySiteNameToLayer(citySiteModel);
     }
 }

@@ -119,6 +119,7 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
     private File tempFile;
     private CitySiteModel citySiteModel;
     private PhotoImageAdapter imageAdapter;
+    public static int REQULTCODE = 1025;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,6 +139,9 @@ public class CitySiteActivity extends BaseActivity implements ViewTreeObserver.O
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 saveInfo();
+                Intent intent = new Intent();
+                intent.putExtra(CITY_SITE_ID,citySiteModel.getId());
+                setResult(REQULTCODE,intent);
                 finish();
                 return true;
             }
