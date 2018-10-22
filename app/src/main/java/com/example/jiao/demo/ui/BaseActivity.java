@@ -21,6 +21,7 @@ import com.esri.core.geometry.Point;
 import com.esri.core.geometry.SpatialReference;
 import com.esri.core.map.Graphic;
 import com.example.jiao.demo.Constants;
+import com.example.jiao.demo.R;
 import com.example.jiao.demo.service.LocationService;
 import com.orhanobut.logger.Logger;
 import com.zhy.autolayout.AutoFrameLayout;
@@ -175,13 +176,24 @@ public class BaseActivity extends SwipeBackActivity implements ServiceConnection
                 }).setPositiveButton("确定", listener).show();
     }
 
-    public AlertDialog showDialog(String content, DialogInterface.OnClickListener oklistener,DialogInterface.OnClickListener listener){
+    public AlertDialog showDialog(String content, final DialogInterface.OnClickListener oklistener, DialogInterface.OnClickListener listener){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        AlertDialog alertDialog = builder
+        final AlertDialog alertDialog = builder
                 .setTitle("提醒")
                 .setMessage(content)
+                .setCancelable(false)
+                .setView(R.layout.edit_dialog)
                 .setNegativeButton("取消", listener)
-                .setPositiveButton("确定", oklistener).show();
+                .setPositiveButton("确定", null).show();
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(oklistener != null){
+                            oklistener.onClick(alertDialog,0);
+                        }
+                    }
+                });
         return alertDialog;
     }
 

@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -326,6 +327,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             Geometry geometry = mapGeometry.getGeometry();
             Graphic graphic = new Graphic(geometry, lineSym);
             trajectoryLayer.addGraphic(graphic);
+
+            Polyline polyline = (Polyline) geometry;
+            Point point = polyline.getPoint(0);
+            PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(trajectoryModel.name,
+                    24, Color.GREEN, Color.TRANSPARENT, Color.TRANSPARENT);
+            Graphic nameGraphic = new Graphic(point, textPicMarkerSymbol);
+            trajectoryLayer.addGraphic(nameGraphic);
         }catch (Exception e){e.printStackTrace();}
 
     }
@@ -612,17 +620,28 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     } else {
                         trackroutePoints.clear();
                     }
+                    trackroutePoints.add(Constants.mapPoint);
                 }else{
+                    //TODO 保存名字
                     trackrouteDialog = showDialog("是否保存当前轨迹记录？", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            saveTrackrouteInfo();
-                            trackroutePoints.clear();
+                            EditText etName = (EditText) trackrouteDialog.findViewById(R.id.et_name);
+                            String name = etName.getText().toString().trim();
+                            if(TextUtils.isEmpty(name)){
+                                Toast.makeText(getApplicationContext(),"请填写轨迹名称！",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            saveTrackrouteInfo(name);
+                            if(trackroutePoints != null)
+                                trackroutePoints.clear();
+                            dialogInterface.dismiss();
                         }
                     }, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            trackroutePoints.clear();
+                            if(trackroutePoints != null)
+                                trackroutePoints.clear();
                             tempTrackrouteLayer.removeAll();
                         }
                     });
@@ -631,20 +650,31 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         }
     }
 
-    public void saveTrackrouteInfo(){
+    public void saveTrackrouteInfo(String name){
         Logger.i("save inof");
         int[] graphicIDs = tempTrackrouteLayer.getGraphicIDs();
         if(graphicIDs != null) {
             Graphic[] graphics = new Graphic[graphicIDs.length];
+            Graphic[] graphicNames = new Graphic[graphicIDs.length];
             ArrayList<TrajectoryModel> trajectoryModels = new ArrayList<>();
             for (int i = 0; i < graphicIDs.length; i++) {
                 graphics[i] = tempTrackrouteLayer.getGraphic(graphicIDs[i]);
                 String points = GeometryEngine.geometryToJson(mapview.getSpatialReference(), graphics[i].getGeometry());
                 TrajectoryModel trajectoryModel = new TrajectoryModel();
+                trajectoryModel.setName(name);
                 trajectoryModel.setPoints(points);
                 trajectoryModels.add(trajectoryModel);
+
+                Polyline polyline = (Polyline) graphics[i].getGeometry();
+                Point point = polyline.getPoint(0);
+                PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(name,
+                        24, Color.GREEN, Color.TRANSPARENT, Color.TRANSPARENT);
+                Graphic graphic = new Graphic(point, textPicMarkerSymbol);
+                graphicNames[i] =  graphic;
             }
             trajectoryLayer.addGraphics(graphics);
+            trajectoryLayer.addGraphics(graphicNames);
+            //TODO 绘制名字
             tempTrackrouteLayer.removeAll();
             DBManager.getInstance(getApplicationContext()).getWritDao()
                     .getTrajectoryModelDao().rxPlain()
@@ -777,7 +807,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
     public void updateCitySiteName(CitySiteModel citySiteModel){
         int[] graphicIDs = citySiteNameLayer.getGraphicIDs();
-        for(int i = 0 ;i< graphicIDs.length;i++){
+        for(int i = 0 ;graphicIDs != null && i< graphicIDs.length;i++){
             Graphic graphic = citySiteNameLayer.getGraphic(graphicIDs[i]);
             Object attributeValue = graphic.getAttributeValue(CITY_SITE_ID);
             if(citySiteModel.getId().equals(attributeValue)){

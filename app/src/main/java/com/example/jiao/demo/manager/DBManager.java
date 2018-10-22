@@ -20,7 +20,7 @@ import org.greenrobot.greendao.database.Database;
 public class DBManager {
 
     private static DBManager instance;
-    private String dbName = "demo.db";
+    private String dbName = "/mnt/sdcard/Demo/demo.db";
     private DaoMaster.OpenHelper dbHelper;
     private DaoSession writDao;
     private String passwd = "abcdef";
