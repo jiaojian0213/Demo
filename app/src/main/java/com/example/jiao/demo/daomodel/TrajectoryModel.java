@@ -16,11 +16,13 @@ public class TrajectoryModel {
 
     public String name;
     public String points;
-    @Generated(hash = 738232005)
-    public TrajectoryModel(Long id, String name, String points) {
+    public String distance;
+    @Generated(hash = 963453204)
+    public TrajectoryModel(Long id, String name, String points, String distance) {
         this.id = id;
         this.name = name;
         this.points = points;
+        this.distance = distance;
     }
     @Generated(hash = 1154364838)
     public TrajectoryModel() {
@@ -43,6 +45,12 @@ public class TrajectoryModel {
     public void setPoints(String points) {
         this.points = points;
     }
-
+    public String getDistance() {
+        return this.distance;
+    }
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+    
     
 }

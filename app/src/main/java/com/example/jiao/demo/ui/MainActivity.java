@@ -331,7 +331,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             Polyline polyline = (Polyline) geometry;
             Point point = polyline.getPoint(0);
             PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(trajectoryModel.name,
-                    24, Color.GREEN, Color.TRANSPARENT, Color.TRANSPARENT);
+                    24, Color.parseColor("#FF1493"), Color.TRANSPARENT, Color.TRANSPARENT);
             Graphic nameGraphic = new Graphic(point, textPicMarkerSymbol);
             trajectoryLayer.addGraphic(nameGraphic);
         }catch (Exception e){e.printStackTrace();}
@@ -622,35 +622,83 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                     }
                     trackroutePoints.add(Constants.mapPoint);
                 }else{
-                    //TODO 保存名字
-                    trackrouteDialog = showDialog("是否保存当前轨迹记录？", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            EditText etName = (EditText) trackrouteDialog.findViewById(R.id.et_name);
-                            String name = etName.getText().toString().trim();
-                            if(TextUtils.isEmpty(name)){
-                                Toast.makeText(getApplicationContext(),"请填写轨迹名称！",Toast.LENGTH_SHORT).show();
-                                return;
+                    if(trackroutePoints.size() < 2){
+                        Toast.makeText(getApplicationContext(),"您还没有产生轨迹！",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String trackrouteDistance = "0";
+                    if(trackroutePoints != null)
+                        trackrouteDistance = getTrackrouteDistance();
+                    final String distance = trackrouteDistance;
+                    trackrouteDialog = createDialog("是否保存当前轨迹记录？",trackrouteDistance, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                EditText etName = (EditText) trackrouteDialog.findViewById(R.id.et_name);
+                                String name = etName.getText().toString().trim();
+                                if(TextUtils.isEmpty(name)){
+                                    Toast.makeText(getApplicationContext(),"请填写轨迹名称！",Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                saveTrackrouteInfo(name,distance);
+                                if(trackroutePoints != null)
+                                    trackroutePoints.clear();
+                                dialogInterface.dismiss();
                             }
-                            saveTrackrouteInfo(name);
-                            if(trackroutePoints != null)
-                                trackroutePoints.clear();
-                            dialogInterface.dismiss();
-                        }
-                    }, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            if(trackroutePoints != null)
-                                trackroutePoints.clear();
-                            tempTrackrouteLayer.removeAll();
-                        }
-                    });
-                }
+                        }, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if(trackroutePoints != null)
+                                    trackroutePoints.clear();
+                                tempTrackrouteLayer.removeAll();
+                            }
+                        });
+                    }
                 break;
         }
     }
 
-    public void saveTrackrouteInfo(String name){
+    public String getTrackrouteDistance(){
+        try {
+            double length = 0;
+            int pathCount = trackroutePoints.size();
+            for (int i = 0; i < pathCount - 1; i++) {
+                Point pointStart = trackroutePoints.get(i);
+                Point pointEnd = trackroutePoints.get(i + 1);
+                length += GeometryEngine.geodesicDistance(pointStart, pointEnd, SpatialReference.create(SpatialReference.WKID_WGS84_WEB_MERCATOR), null);
+            }
+            String lengthResultStr = "" + WKTUtils.formatArea(length);
+            return lengthResultStr;
+        }catch (Exception e){
+            return "0";
+        }
+    }
+
+    public AlertDialog createDialog(String content,String distance, final DialogInterface.OnClickListener oklistener, DialogInterface.OnClickListener listener){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog alertDialog = builder
+                .setTitle("提醒")
+                .setMessage(content)
+                .setCancelable(false)
+                .setView(R.layout.edit_dialog)
+                .setNegativeButton("取消", listener)
+                .setPositiveButton("确定", null).show();
+        if(!TextUtils.isEmpty(distance)) {
+            TextView tvDis = (TextView) alertDialog.findViewById(R.id.tv_dis);
+            tvDis.setText(distance+"米");
+        }
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            .setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(oklistener != null){
+                        oklistener.onClick(alertDialog,0);
+                    }
+                }
+            });
+        return alertDialog;
+    }
+
+    public void saveTrackrouteInfo(String name, String distance){
         Logger.i("save inof");
         int[] graphicIDs = tempTrackrouteLayer.getGraphicIDs();
         if(graphicIDs != null) {
@@ -663,12 +711,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
                 TrajectoryModel trajectoryModel = new TrajectoryModel();
                 trajectoryModel.setName(name);
                 trajectoryModel.setPoints(points);
+                trajectoryModel.setDistance(distance);
                 trajectoryModels.add(trajectoryModel);
 
                 Polyline polyline = (Polyline) graphics[i].getGeometry();
                 Point point = polyline.getPoint(0);
                 PictureMarkerSymbol textPicMarkerSymbol = MarkerUtils.createTextPicMarkerSymbol(name,
-                        24, Color.GREEN, Color.TRANSPARENT, Color.TRANSPARENT);
+                        24, Color.parseColor("#FF1493"), Color.TRANSPARENT, Color.TRANSPARENT);
                 Graphic graphic = new Graphic(point, textPicMarkerSymbol);
                 graphicNames[i] =  graphic;
             }
