@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.zhy.autolayout.AutoRelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="122px"
+    android:paddingLeft="100px"
+    android:paddingRight="40px"
+    android:gravity="center_vertical"
+    android:background="@color/white"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="122px"
+        android:text="名称"
+        android:textColor="#333333"
+        android:gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:textSize="40px"
+        android:textColorHint="#bbbbbb" />
+
+    <EditText
+        android:layout_marginLeft="200px"
+        android:id="@+id/et_name"
+        android:layout_width="match_parent"
+        android:layout_height="122px"
+        android:layout_weight="1"
+        android:hint="请输入名称"
+        android:layout_toLeftOf="@+id/bt_sm_sfz"
+        style="@style/info_edit_style"
+        android:inputType="text"
+        />
+</com.zhy.autolayout.AutoRelativeLayout>
