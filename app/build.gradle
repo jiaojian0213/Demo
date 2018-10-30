@@ -61,7 +61,7 @@ android {
     greendao {
         targetGenDir 'src/main/java'
         daoPackage 'com.example.jiao.demo.dao'
-        schemaVersion  2 //
+        schemaVersion  3 //
     }
 }
 

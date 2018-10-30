@@ -17,12 +17,16 @@ public class TrajectoryModel {
     public String name;
     public String points;
     public String distance;
-    @Generated(hash = 963453204)
-    public TrajectoryModel(Long id, String name, String points, String distance) {
+
+    public String geojsonPoints;
+    @Generated(hash = 1774364428)
+    public TrajectoryModel(Long id, String name, String points, String distance,
+            String geojsonPoints) {
         this.id = id;
         this.name = name;
         this.points = points;
         this.distance = distance;
+        this.geojsonPoints = geojsonPoints;
     }
     @Generated(hash = 1154364838)
     public TrajectoryModel() {
@@ -50,6 +54,12 @@ public class TrajectoryModel {
     }
     public void setDistance(String distance) {
         this.distance = distance;
+    }
+    public String getGeojsonPoints() {
+        return this.geojsonPoints;
+    }
+    public void setGeojsonPoints(String geojsonPoints) {
+        this.geojsonPoints = geojsonPoints;
     }
     
     

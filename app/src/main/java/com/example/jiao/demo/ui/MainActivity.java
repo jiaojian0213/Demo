@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -708,9 +709,13 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
             for (int i = 0; i < graphicIDs.length; i++) {
                 graphics[i] = tempTrackrouteLayer.getGraphic(graphicIDs[i]);
                 String points = GeometryEngine.geometryToJson(mapview.getSpatialReference(), graphics[i].getGeometry());
+                Log.i("info","points = "+points);
                 TrajectoryModel trajectoryModel = new TrajectoryModel();
                 trajectoryModel.setName(name);
                 trajectoryModel.setPoints(points);
+                String wgs84Point = getWgs84Point(points);
+                Log.i("info","wgs84Point = "+wgs84Point);
+                trajectoryModel.setGeojsonPoints(wgs84Point);
                 trajectoryModel.setDistance(distance);
                 trajectoryModels.add(trajectoryModel);
 
@@ -738,6 +743,28 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
 
 
 //        trackroutePoints
+    }
+
+    public String getWgs84Point(String points){
+        try {
+            String aaa = "{\"type\": \"FeatureCollection\",\"features\": [{\"type\": \"Feature\",\"geometry\": {\"type\": \"LineString\",\"coordinates\": [$]},\"properties\": {\"prop0\": \"value0\",\"prop1\": 0.0}}]}";
+            String subPoints = points.substring(points.indexOf("[[[") + 3, points.indexOf("]]]"));
+            String[] split = subPoints.split("\\],\\[");
+            StringBuilder sb = new StringBuilder();
+            sb.append("[");
+            for (int i = 0; i < split.length; i++) {
+                try {
+                    String[] pointStr = split[i].split(",");
+                    Point point3857 = new Point(Double.valueOf(pointStr[0]), Double.valueOf(pointStr[1]));
+                    Point point4326 = WKTUtils.change3857To4326(point3857);
+                    sb.append(point4326.getX()).append(",").append(point4326.getY()).append("],[");
+                }catch (Exception e){}
+            }
+            String result = aaa.replace("$", sb.substring(0, sb.length() - 2));
+            return result;
+        }catch (Exception e){
+            return points;
+        }
     }
 
     @Override
