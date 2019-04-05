@@ -22,6 +22,8 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
     private TianDiTuTiledMapServiceType _mapType;
     private TileInfo tiandituTileInfo;
 
+    private static final String tk = "1072d95046f18e67463ce40d645a9b8d";
+
     double[] res={
             156543.03392800014,
             78271.516963999937,
@@ -240,16 +242,32 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
              url.append(".tianditu.com/DataServer?T=img_c&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
             break;
         case VEC_W://电子地图
-             url.append(".tianditu.com/DataServer?T=vec_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
+            url.append(".tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&tk=")
+                    .append(tk)
+                    .append("&LAYER=").append("vec")
+                    .append("&TILECOL=").append(col)
+                    .append("&TILEROW=").append(row)
+                    .append("&TILEMATRIX=").append(level);
+           // url.append(".tianditu.com/DataServer?T=vec_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
             break;
         case CVA_W://地名
-             url.append(".tianditu.com/DataServer?T=cva_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
+            url.append(".tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&tk=")
+                    .append(tk)
+                    .append("&TILECOL=").append(col)
+                    .append("&TILEROW=").append(row)
+                    .append("&TILEMATRIX=").append(level);
+//             url.append(".tianditu.com/DataServer?T=cva_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
             break;
         case CIA_W://路网
              url.append(".tianditu.com/DataServer?T=cia_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
             break;
         case IMG_W://影像
-             url.append(".tianditu.com/DataServer?T=img_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
+            url.append(".tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&tk=")
+                    .append(tk)
+                    .append("&TILECOL=").append(col)
+                    .append("&TILEROW=").append(row)
+                    .append("&TILEMATRIX=").append(level);
+//             url.append(".tianditu.com/DataServer?T=img_w&X=").append(col).append("&Y=").append(row).append("&L=").append(level);
             break;
             default:
                 return null;
