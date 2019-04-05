@@ -22,7 +22,7 @@ public class TianDiTuTiledMapServiceLayer extends TiledServiceLayer {
     private TianDiTuTiledMapServiceType _mapType;
     private TileInfo tiandituTileInfo;
 
-    private static final String tk = "1072d95046f18e67463ce40d645a9b8d";
+    private static final String tk = "e7e5b698c3f9a3e85e5842ee0c202319";
 
     double[] res={
             156543.03392800014,
