@@ -187,6 +187,7 @@ public class MainActivity extends BaseActivity implements CompoundButton.OnCheck
         vecLayer = new TianDiTuTiledMapServiceLayer(VEC_W);
         cvaLayer = new TianDiTuTiledMapServiceLayer(CVA_W);
         imgLayer = new TianDiTuTiledMapServiceLayer(IMG_W);
+
         citySiteLayer = new PeaceGraphicsLayer();
         citySiteNameLayer = new PeaceGraphicsLayer();
         trajectoryLayer = new PeaceGraphicsLayer();
